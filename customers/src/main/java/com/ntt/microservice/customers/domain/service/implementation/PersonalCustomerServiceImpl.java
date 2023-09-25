@@ -3,6 +3,7 @@ package com.ntt.microservice.customers.domain.service.implementation;
 import com.ntt.microservice.customers.domain.model.PersonalCustomer;
 import com.ntt.microservice.customers.domain.repository.PersonalCustomerRepository;
 import com.ntt.microservice.customers.domain.service.PersonalCustomerService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
 public class PersonalCustomerServiceImpl implements PersonalCustomerService {
 
-    @Autowired
     private PersonalCustomerRepository personalCustomerRepository;
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +33,7 @@ public class BusinessCustomerServiceImpl implements BusinessCustomerService {
 
     @Override
     public BusinessCustomer save(BusinessCustomer businessCustomer) {
+        businessCustomer.setId(UUID.randomUUID().toString());
         return businessCustomerRepository.save(businessCustomer);
     }
 
