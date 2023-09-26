@@ -1,7 +1,7 @@
 package com.ntt.microservice.customers.api.controller;
 
-import com.ntt.microservice.customers.domain.model.Customer;
-import com.ntt.microservice.customers.domain.service.CustomerService;
+import com.ntt.microservice.customers.api.dto.response.CustomerResponseDto;
+import com.ntt.microservice.customers.service.handler.CustomerHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,32 +9,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
 public class CustomerController {
 
-    private CustomerService customerService;
+    private CustomerHandler customerHandler;
 
     @GetMapping("/")
-    public ResponseEntity<List<Customer>> findAll(){
-        return ResponseEntity.ok(customerService.findAll());
+    public ResponseEntity<List<CustomerResponseDto>> findAll(){
+        return ResponseEntity.ok(customerHandler.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> findById(@PathVariable String id){
-        Optional<Customer> optional = customerService.findById(id);
-        return optional.map(
-                ResponseEntity::ok
-        ).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CustomerResponseDto> findById(@PathVariable String id){
+        return ResponseEntity.ok(customerHandler.findById(id));
     }
 
     @GetMapping("/documentNumber/{documentNumber}")
-    public ResponseEntity<Customer> findByDocumentNumber(@PathVariable String documentNumber){
-        Optional<Customer> optional = customerService.findByDocumentNumber(documentNumber);
-        return optional.map(
-                ResponseEntity::ok
-        ).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CustomerResponseDto> findByDocumentNumber(@PathVariable String documentNumber){
+        return ResponseEntity.ok(customerHandler.findByDocumentNumber(documentNumber));
     }
 }
