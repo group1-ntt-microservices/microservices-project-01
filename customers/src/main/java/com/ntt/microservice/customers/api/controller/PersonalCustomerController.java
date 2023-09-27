@@ -2,7 +2,6 @@ package com.ntt.microservice.customers.api.controller;
 
 import com.ntt.microservice.customers.api.dto.request.PersonalCustomerRequestDto;
 import com.ntt.microservice.customers.api.dto.response.PersonalCustomerResponseDto;
-import com.ntt.microservice.customers.domain.service.PersonalCustomerService;
 import com.ntt.microservice.customers.service.handler.PersonalCustomerHandler;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/personal")
 public class PersonalCustomerController {
 
-  private PersonalCustomerService personalCustomerService;
   private PersonalCustomerHandler personalCustomerHandler;
 
   /**
