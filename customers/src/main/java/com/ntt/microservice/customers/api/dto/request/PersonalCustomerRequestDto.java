@@ -43,9 +43,6 @@ public class PersonalCustomerRequestDto {
   @Email(message = "Invalid email format")
   private String mail;
 
-  @NotBlank(message = "Date of birth is required.")
-  @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$",
-      message = "Date of birth must be in the format 'YYYY-MM-DD'.")
   @Past(message = "Date of birth must be in the past")
   private Date birthDate;
 
