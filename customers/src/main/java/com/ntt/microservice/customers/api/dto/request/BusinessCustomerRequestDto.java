@@ -1,12 +1,11 @@
 package com.ntt.microservice.customers.api.dto.request;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * DTO for business customer information with validation rules.
@@ -21,18 +20,15 @@ public class BusinessCustomerRequestDto {
   private String documentNumber;
 
   @NotBlank(message = "business name is required.")
-  @Max(value = 50, message = "business name must be less than 50 characters.")
-  @Min(value = 3, message = "business name must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "business name must be between 3 and 50 characters.")
   private String businessName;
 
   @NotBlank(message = "business sector is required.")
-  @Max(value = 50, message = "business sector must be less than 50 characters.")
-  @Min(value = 3, message = "business sector must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "business sector must be between 3 and 50 characters.")
   private String businessSector;
 
   @NotBlank(message = "representative name is required.")
-  @Max(value = 50, message = "representative name must be less than 50 characters.")
-  @Min(value = 3, message = "representative name must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "representative name must be between 3 and 50 characters.")
   private String representativeName;
 
   @NotBlank(message = "representative document number is required.")
@@ -41,8 +37,7 @@ public class BusinessCustomerRequestDto {
   private String representativeDocumentNumber;
 
   @NotBlank(message = "Address is required.")
-  @Max(value = 50, message = "Address must be less than 50 characters.")
-  @Min(value = 3, message = "Address must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "Address must be between 3 and 50 characters.")
   private String address;
 
   @NotBlank(message = "Phone is required.")

@@ -2,13 +2,12 @@ package com.ntt.microservice.customers.api.dto.request;
 
 import java.util.Date;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * DTO for personal customer information with validation rules.
@@ -23,18 +22,15 @@ public class PersonalCustomerRequestDto {
   private String documentNumber;
 
   @NotBlank(message = "Name is required.")
-  @Max(value = 50, message = "Name must be less than 50 characters.")
-  @Min(value = 3, message = "Name must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "Name must be between 3 and 50 characters.")
   private String name;
 
   @NotBlank(message = "Last name is required.")
-  @Max(value = 50, message = "Last name must be less than 50 characters.")
-  @Min(value = 3, message = "Last name must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "Last name must be between 3 and 50 characters.")
   private String lastName;
 
   @NotBlank(message = "Address is required.")
-  @Max(value = 50, message = "Address must be less than 50 characters.")
-  @Min(value = 3, message = "Address must be more than 2 characters.")
+  @Length(min = 3, max = 50, message = "Address must be between 3 and 50 characters.")
   private String address;
 
   @NotBlank(message = "Phone is required.")
@@ -47,6 +43,9 @@ public class PersonalCustomerRequestDto {
   @Email(message = "Invalid email format")
   private String mail;
 
+  @NotBlank(message = "Date of birth is required.")
+  @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+      message = "Date of birth must be in the format 'YYYY-MM-DD'.")
   @Past(message = "Date of birth must be in the past")
   private Date birthDate;
 
