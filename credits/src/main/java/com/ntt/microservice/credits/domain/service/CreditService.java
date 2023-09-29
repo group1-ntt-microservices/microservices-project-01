@@ -17,6 +17,4 @@ public interface CreditService {
   Credit save(Credit credit);
 
   void deleteById(String id);
-
-  Credit update(String id, Credit credit);
 }

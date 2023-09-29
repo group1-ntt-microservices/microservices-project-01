@@ -70,15 +70,4 @@ public class CreditServiceImpl implements CreditService {
     creditRepository.deleteById(id);
   }
 
-  /**
-   * Update an existing credit by its ID.
-   *
-   * @param id     The ID of the credit to update.
-   * @param credit The updated Credit object.
-   * @return The updated Credit object.
-   */
-  @Override
-  public Credit update(String id, Credit credit) {
-    return creditRepository.save(credit);
-  }
 }
