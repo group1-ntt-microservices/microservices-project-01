@@ -6,7 +6,6 @@ public class Constants {
   }
 
   public static final String TYPE_PERSONAL_CUSTOMER = "PERSONAL";
-  public static final String TYPE_BUSINESS_CUSTOMER = "BUSINESS";
   public static final int STATUS_CREDIT_PAID = 1;
   public static final int STATUS_CREDIT_PENDING = 0;
 }
