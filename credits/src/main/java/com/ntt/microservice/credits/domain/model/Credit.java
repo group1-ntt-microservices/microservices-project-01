@@ -44,6 +44,9 @@ public class Credit {
   @Column(name = "amount_paid")
   private float amountPaid;
 
+  @Column(name = "status")
+  private int status;
+
   @Column(name = "is_active")
   private boolean isActive;
 
