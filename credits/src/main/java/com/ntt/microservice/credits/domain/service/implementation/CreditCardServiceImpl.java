@@ -70,15 +70,13 @@ public class CreditCardServiceImpl implements CreditCardService {
     creditCardRepository.deleteById(id);
   }
 
-  /**
-   * Update an existing credit card by its ID.
-   *
-   * @param id          The ID of the credit card to update.
-   * @param creditCard The updated CreditCard object.
-   * @return The updated CreditCard object.
-   */
   @Override
-  public CreditCard update(String id, CreditCard creditCard) {
-    return creditCardRepository.save(creditCard);
+  public boolean existsByCustomerId(String customerId) {
+    return creditCardRepository.existsByCustomerId(customerId);
+  }
+
+  @Override
+  public boolean existsByCardNumber(String cardNumber) {
+    return creditCardRepository.existsByCardNumber(cardNumber);
   }
 }

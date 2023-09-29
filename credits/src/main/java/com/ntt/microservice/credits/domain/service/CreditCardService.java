@@ -18,5 +18,7 @@ public interface CreditCardService {
 
   void deleteById(String id);
 
-  CreditCard update(String id, CreditCard creditCard);
+  boolean existsByCustomerId(String customerId);
+
+  boolean existsByCardNumber(String cardNumber);
 }
