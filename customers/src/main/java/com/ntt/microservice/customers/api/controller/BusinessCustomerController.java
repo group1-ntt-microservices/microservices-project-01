@@ -102,6 +102,6 @@ public class BusinessCustomerController {
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteById(@PathVariable String id) {
     businessCustomerHandler.deleteById(id);
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 }
