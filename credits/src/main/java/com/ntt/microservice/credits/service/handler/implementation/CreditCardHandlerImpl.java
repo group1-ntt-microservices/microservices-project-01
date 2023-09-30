@@ -36,11 +36,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
   private CreditCardMapper creditCardMapper;
   private CustomerFeignService customerFeignService;
 
-  /**
-   * Retrieves a list of all credit cards.
-   *
-   * @return A list of credit card response DTOs.
-   */
   @Override
   public List<CreditCardResponseDto> findAll() {
     return creditCardService.findAll()
@@ -49,12 +44,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
         .collect(Collectors.toList());
   }
 
-  /**
-   * Retrieves a credit card by its ID.
-   *
-   * @param id The ID of the credit card.
-   * @return The credit card response DTO.
-   */
   @Override
   public CreditCardResponseDto findById(String id) {
     return creditCardService.findById(id)
@@ -62,12 +51,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
         .orElseThrow(CreditNotFoundException::new);
   }
 
-  /**
-   * Retrieves a credit card by customer ID.
-   *
-   * @param customerId The ID of the customer.
-   * @return The credit card response DTO.
-   */
   @Override
   public CreditCardResponseDto findByCustomerId(String customerId) {
     try {
@@ -88,12 +71,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
     }
   }
 
-  /**
-   * Creates a new credit card.
-   *
-   * @param creditCardRequestDto The credit card request DTO.
-   * @return The created credit card response DTO.
-   */
   @Override
   public CreditCardResponseDto save(CreditCardRequestDto creditCardRequestDto) {
     if (creditCardService.existsByCardNumber(creditCardRequestDto.getCardNumber())) {
@@ -135,11 +112,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
     }
   }
 
-  /**
-   * Delete a credit card by its ID.
-   *
-   * @param id The ID of the credit card to delete.
-   */
   @Override
   public void deleteById(String id) {
     creditCardService.findById(id).ifPresentOrElse(creditCard -> creditCardService.deleteById(id),
@@ -148,13 +120,6 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
         });
   }
 
-  /**
-   * Updates a credit card by its ID.
-   *
-   * @param id                   The ID of the credit card to update.
-   * @param creditCardRequestDto The credit card request DTO with updated information.
-   * @return The updated credit card response DTO.
-   */
   @Override
   public CreditCardResponseDto update(String id, CreditCardRequestDto creditCardRequestDto) {
     Optional<CreditCard> optionalCreditCard = creditCardService.findById(id);

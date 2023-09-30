@@ -22,6 +22,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionAdvisor {
 
+  /**
+   * Handles exceptions when a card number already exists.
+   *
+   * @return ResponseEntity with the card number already exists error message.
+   */
   @ExceptionHandler(CardNumberAlreadyExistsException.class)
   public ResponseEntity<Map<String, String>> handleCardNumberAlreadyExistsException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -31,6 +36,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when a credit is already paid.
+   *
+   * @return ResponseEntity with the credit already paid error message.
+   */
   @ExceptionHandler(CreditAlreadyPaidException.class)
   public ResponseEntity<Map<String, String>> handleCreditAlreadyPaidException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -40,6 +50,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when a credit is not found.
+   *
+   * @return ResponseEntity with the credit not found error message.
+   */
   @ExceptionHandler(CreditNotFoundException.class)
   public ResponseEntity<Map<String, String>> handleCreditNotFoundException() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -49,6 +64,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when there is an internal error in the credit service.
+   *
+   * @return ResponseEntity with the credit service error message.
+   */
   @ExceptionHandler(CreditServiceInternalErrorException.class)
   public ResponseEntity<Map<String, String>> handleCreditServiceInternalErrorException() {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -58,6 +78,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when a customer is already assigned.
+   *
+   * @return ResponseEntity with the customer already assigned error message.
+   */
   @ExceptionHandler(CustomerAlreadyAssignedException.class)
   public ResponseEntity<Map<String, String>> handleCustomerAlreadyAssignedException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -67,6 +92,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when a customer found is null.
+   *
+   * @return ResponseEntity with the customer found is null error message.
+   */
   @ExceptionHandler(CustomerFoundIsNullException.class)
   public ResponseEntity<Map<String, String>> handleCustomerFoundIsNullException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -76,6 +106,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when a customer is not found.
+   *
+   * @return ResponseEntity with the customer not found error message.
+   */
   @ExceptionHandler(CustomerNotFoundException.class)
   public ResponseEntity<Map<String, String>> handleCustomerNotFoundException() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -85,6 +120,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when it's impossible to change a value.
+   *
+   * @return ResponseEntity with the impossible change value error message.
+   */
   @ExceptionHandler(ImpossibleChangeValueException.class)
   public ResponseEntity<Map<String, String>> handleImpossibleChangeValueException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -94,6 +134,11 @@ public class ExceptionAdvisor {
         ));
   }
 
+  /**
+   * Handles exceptions when some amount is incorrect.
+   *
+   * @return ResponseEntity with some amount is incorrect error message.
+   */
   @ExceptionHandler(SomeAmountIsIncorrectException.class)
   public ResponseEntity<Map<String, String>> handleSomeAmountIsIncorrectException() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)

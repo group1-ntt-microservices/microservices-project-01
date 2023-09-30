@@ -36,11 +36,6 @@ public class CreditHandlerImpl implements CreditHandler {
   private CreditMapper creditMapper;
   private CustomerFeignService customerFeignService;
 
-  /**
-   * Retrieves a list of all credits.
-   *
-   * @return A list of CreditResponseDto objects.
-   */
   @Override
   public List<CreditResponseDto> findAll() {
     return creditService.findAll()
@@ -49,12 +44,6 @@ public class CreditHandlerImpl implements CreditHandler {
         .collect(Collectors.toList());
   }
 
-  /**
-   * Retrieves a credit by its ID.
-   *
-   * @param id The unique identifier of the credit.
-   * @return The CreditResponseDto object if found, or null otherwise.
-   */
   @Override
   public CreditResponseDto findById(String id) {
     return creditService.findById(id)
@@ -62,12 +51,6 @@ public class CreditHandlerImpl implements CreditHandler {
         .orElseThrow(CreditNotFoundException::new);
   }
 
-  /**
-   * Saves a new credit based on the provided CreditRequestDto.
-   *
-   * @param creditRequestDto The CreditRequestDto containing credit details.
-   * @return The created CreditResponseDto.
-   */
   @Override
   public CreditResponseDto save(CreditRequestDto creditRequestDto) {
     try {
@@ -93,11 +76,6 @@ public class CreditHandlerImpl implements CreditHandler {
     }
   }
 
-  /**
-   * Delete a credit by its ID.
-   *
-   * @param id The unique identifier of the credit to delete.
-   */
   @Override
   public void deleteById(String id) {
     creditService.findById(id).ifPresentOrElse(credit -> creditService.deleteById(id),
@@ -106,13 +84,6 @@ public class CreditHandlerImpl implements CreditHandler {
         });
   }
 
-  /**
-   * Updates an existing credit with the provided CreditRequestDto.
-   *
-   * @param id               The unique identifier of the credit to update.
-   * @param creditRequestDto The CreditRequestDto containing updated credit details.
-   * @return The updated CreditResponseDto.
-   */
   @Override
   public CreditResponseDto update(String id, CreditRequestDto creditRequestDto) {
     if (creditRequestDto.getAmountInterest() < creditRequestDto.getAmountPaid()) {
