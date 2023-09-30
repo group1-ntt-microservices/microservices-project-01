@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of Personal Customer Service.
+ * Implementation of Personal Customer Service interface.
  */
 @AllArgsConstructor
 @Service

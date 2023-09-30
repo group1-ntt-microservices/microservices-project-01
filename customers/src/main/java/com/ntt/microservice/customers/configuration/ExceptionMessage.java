@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Enum that defines exception messages.
+ * Enum of messages for exceptions.
  */
 @AllArgsConstructor
 @Getter
