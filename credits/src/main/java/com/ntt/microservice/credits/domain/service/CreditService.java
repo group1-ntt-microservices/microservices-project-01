@@ -8,13 +8,42 @@ import java.util.Optional;
  * Service interface for managing Credit entities.
  */
 public interface CreditService {
+
+  /**
+   * Retrieve a list of all credits.
+   *
+   * @return A list of Credit objects.
+   */
   List<Credit> findAll();
 
+  /**
+   * Find a credit by ID.
+   *
+   * @param id The ID of the credit to find.
+   * @return An optional Credit object if found, empty otherwise.
+   */
   Optional<Credit> findById(String id);
 
-  boolean existsCustomerId(String id);
+  /**
+   * Check if a credit exists for a given customer ID.
+   *
+   * @param customerId The customer ID to check.
+   * @return True if a credit exists, false otherwise.
+   */
+  boolean existsCustomerId(String customerId);
 
+  /**
+   * Save a new credit.
+   *
+   * @param credit The Credit object to save or update.
+   * @return The saved Credit object.
+   */
   Credit save(Credit credit);
 
+  /**
+   * Delete a credit by its ID.
+   *
+   * @param id The ID of the credit to delete.
+   */
   void deleteById(String id);
 }

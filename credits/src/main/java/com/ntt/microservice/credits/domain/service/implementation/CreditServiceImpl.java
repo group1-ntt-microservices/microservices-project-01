@@ -41,12 +41,12 @@ public class CreditServiceImpl implements CreditService {
   /**
    * Check if a credit exists for a given customer ID.
    *
-   * @param id The customer ID to check.
+   * @param customerId The customer ID to check.
    * @return True if a credit exists, false otherwise.
    */
   @Override
-  public boolean existsCustomerId(String id) {
-    return creditRepository.existsByCustomerId(id);
+  public boolean existsCustomerId(String customerId) {
+    return creditRepository.existsByCustomerId(customerId);
   }
 
   /**

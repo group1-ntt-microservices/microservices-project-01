@@ -70,11 +70,23 @@ public class CreditCardServiceImpl implements CreditCardService {
     creditCardRepository.deleteById(id);
   }
 
+  /**
+   * Check if a credit card exists for a given customer ID.
+   *
+   * @param customerId The customer ID to check.
+   * @return True if a credit exists, false otherwise.
+   */
   @Override
   public boolean existsByCustomerId(String customerId) {
     return creditCardRepository.existsByCustomerId(customerId);
   }
 
+  /**
+   * check if a credit card exists for a given card number.
+   *
+   * @param cardNumber The card number to check.
+   * @return True if a credit card exists, false otherwise
+   */
   @Override
   public boolean existsByCardNumber(String cardNumber) {
     return creditCardRepository.existsByCardNumber(cardNumber);
