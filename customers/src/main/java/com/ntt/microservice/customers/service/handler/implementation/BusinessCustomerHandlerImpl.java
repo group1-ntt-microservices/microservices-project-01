@@ -71,16 +71,18 @@ public class BusinessCustomerHandlerImpl implements BusinessCustomerHandler {
     }
     BusinessCustomer businessCustomer = customerMapper.requestDtoToBusinessCustomer(customer);
     businessCustomer.setId(id);
+    businessCustomer.setActive(existingBusinessCustomer.get().isActive());
+
     return customerMapper.businessCustomerToResponseDto(
         businessCustomerService.save(businessCustomer));
   }
 
   @Override
   public void deleteById(String id) {
-    Optional<BusinessCustomer> existingBusinessCustomer = businessCustomerService.findById(id);
-    if (!existingBusinessCustomer.isPresent()) {
-      throw new CustomerNotFoundException();
-    }
-    businessCustomerService.deleteById(id);
+    businessCustomerService.findById(id).ifPresentOrElse(
+        businessCustomer -> businessCustomerService.deleteById(id),
+        () -> {
+          throw new CustomerNotFoundException();
+        });
   }
 }

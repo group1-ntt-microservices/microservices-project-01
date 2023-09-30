@@ -73,17 +73,18 @@ public class PersonalCustomerHandlerImpl implements PersonalCustomerHandler {
     }
     PersonalCustomer personalCustomer = customerMapper.requestDtoToPersonalCustomer(customer);
     personalCustomer.setId(id);
+    personalCustomer.setActive(existingPersonalCustomer.get().isActive());
+
     return customerMapper.personalCustomerToResponseDto(
         personalCustomerService.save(personalCustomer));
-
   }
 
   @Override
   public void deleteById(String id) {
-    Optional<PersonalCustomer> existingPersonalCustomer = personalCustomerService.findById(id);
-    if (!existingPersonalCustomer.isPresent()) {
-      throw new CustomerNotFoundException();
-    }
-    personalCustomerService.deleteById(id);
+    personalCustomerService.findById(id).ifPresentOrElse(
+        personalCustomer -> personalCustomerService.deleteById(id),
+        () -> {
+          throw new CustomerNotFoundException();
+        });
   }
 }
