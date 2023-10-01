@@ -1,57 +1,107 @@
 package com.ntt.microservice.customers.api.controller;
 
-import com.ntt.microservice.customers.domain.model.BusinessCustomer;
-import com.ntt.microservice.customers.domain.service.BusinessCustomerService;
+import com.ntt.microservice.customers.api.dto.request.BusinessCustomerRequestDto;
+import com.ntt.microservice.customers.api.dto.response.BusinessCustomerResponseDto;
+import com.ntt.microservice.customers.service.handler.BusinessCustomerHandler;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Controller for managing business customers.
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping("/business")
 public class BusinessCustomerController {
-    private BusinessCustomerService businessCustomerService;
 
-    @GetMapping("/")
-    public ResponseEntity<List<BusinessCustomer>> findAll(){
-        return ResponseEntity.ok(businessCustomerService.findAll());
-    }
+  private BusinessCustomerHandler businessCustomerHandler;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BusinessCustomer> findById(@PathVariable String id){
-        Optional<BusinessCustomer> optional = businessCustomerService.findById(id);
-        return optional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+  /**
+   * Retrieves all business customers.
+   *
+   * @return ResponseEntity with a list of business customers in the body.
+   */
+  @GetMapping("/")
+  public ResponseEntity<List<BusinessCustomerResponseDto>> findAll() {
+    return ResponseEntity.ok(businessCustomerHandler.findAll());
+  }
 
-    @GetMapping("/documentNumber/{documentNumber}")
-    public ResponseEntity<BusinessCustomer> findByDocumentNumber(@PathVariable String documentNumber){
-        Optional<BusinessCustomer> optional = businessCustomerService.findByDocumentNumber(documentNumber);
-        return optional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+  /**
+   * Finds a business customer by ID.
+   *
+   * @param id The ID of the business customer to be retrieved.
+   * @return ResponseEntity with the found business customer in the body if it exists;
+   *        otherwise, returns 404 not found.
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<BusinessCustomerResponseDto> findById(@PathVariable String id) {
+    return ResponseEntity.ok(businessCustomerHandler.findById(id));
+  }
 
-    @PostMapping("/")
-    public ResponseEntity<BusinessCustomer> save(@RequestBody BusinessCustomer personalCustomer){
-        return ResponseEntity.ok(businessCustomerService.save(personalCustomer));
-    }
+  /**
+   * Finds a business customer by document number.
+   *
+   * @param documentNumber The document number of the business customer to be found.
+   * @return ResponseEntity with the found business customer in the body if it exists;
+   *        otherwise, returns 404 not found.
+   */
+  @GetMapping("/documentNumber/{documentNumber}")
+  public ResponseEntity<BusinessCustomerResponseDto> findByDocumentNumber(
+      @PathVariable String documentNumber
+  ) {
+    return ResponseEntity.ok(businessCustomerHandler.findByDocumentNumber(documentNumber));
+  }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BusinessCustomer> update(@RequestBody BusinessCustomer personalCustomer){
-        Optional<BusinessCustomer> optional = businessCustomerService.findById(personalCustomer.getId());
-        return optional.map(
-                businessCustomer -> {
-                    BusinessCustomer customer = new BusinessCustomer();
-                    customer.setId(businessCustomer.getId());
-                    return ResponseEntity.ok(businessCustomerService.save(customer));
-                }
-        ).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+  /**
+   * Creates a new business customer.
+   *
+   * @param businessCustomerRequestDto The request DTO containing business customer information.
+   * @return ResponseEntity with the created business customer in the body.
+   */
+  @PostMapping("/")
+  public ResponseEntity<BusinessCustomerResponseDto> save(
+      @Validated @RequestBody BusinessCustomerRequestDto businessCustomerRequestDto
+  ) {
+    return ResponseEntity.ok(businessCustomerHandler.save(businessCustomerRequestDto));
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable String id){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+  /**
+   * Updates an existing business customer.
+   *
+   * @param id The ID of the business customer to be updated.
+   * @param businessCustomerRequestDto The request DTO containing updated business customer
+   *                                   information.
+   * @return ResponseEntity with the updated business customer in the body if it exists;
+   *        otherwise, returns 404 not found.
+   */
+  @PutMapping("/{id}")
+  public ResponseEntity<BusinessCustomerResponseDto> update(
+      @PathVariable String id,
+      @Validated @RequestBody BusinessCustomerRequestDto businessCustomerRequestDto
+  ) {
+    return ResponseEntity.ok(businessCustomerHandler.update(id, businessCustomerRequestDto));
+  }
+
+  /**
+   * Delete a business customer by ID.
+   *
+   * @param id The ID of the business customer to be deleted.
+   * @return ResponseEntity with no content.
+   */
+  @DeleteMapping("/{id}")
+  public ResponseEntity<HttpStatus> deleteById(@PathVariable String id) {
+    businessCustomerHandler.deleteById(id);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
 }
