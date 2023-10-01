@@ -1,5 +1,8 @@
 package com.ntt.microservice.credits.configuration;
 
+/**
+ * Constants used in the application.
+ */
 public class Constants {
   private Constants() {
     throw new IllegalStateException("Utility class");

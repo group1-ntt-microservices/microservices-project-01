@@ -9,5 +9,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CreditRepository extends JpaRepository<Credit, String> {
+
+  /**
+   * Check if a credit with the given customer ID exists.
+   *
+   * @param customerId The unique identifier of the customer.
+   * @return true if a credit with the given customer ID exists, false otherwise.
+   */
   boolean existsByCustomerId(String customerId);
 }
