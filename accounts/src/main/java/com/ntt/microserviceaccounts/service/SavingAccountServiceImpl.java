@@ -32,17 +32,23 @@ public class SavingAccountServiceImpl implements SavingAccountService {
     @Override
     public Map<String, Object> save(SavingAccount savingAccount, String documentNumber) {
         Map<String, Object>  resp = new HashMap<>();
-        if (!businessRuleService.validateSavingsAndFixedAccount(documentNumber)){
-            resp.put("succes", false);
-            resp.put("message", "The business rule is not followed");
-            return resp;
+        try {
+            if (!businessRuleService.validateSavingsAndFixedAccount(documentNumber)){
+                resp.put("success", 0);
+                resp.put("message", "The business rule is not followed");
+                return resp;
+            }
+            savingAccount.setId(UUID.randomUUID().toString());
+            savingAccount.setDocumentNumber(documentNumber);
+            savingAccount.setTypeAccount("savingAccount");
+            savingAccountRepository.save(savingAccount);
+            resp.put("success", 1);
+            resp.put("message", "Checking Saving Account account registered correctly");
+        }catch (Exception e){
+            resp.put("success", -1);
+            resp.put("message", "Internal Error :"+e.getMessage());
+
         }
-        savingAccount.setId(UUID.randomUUID().toString());
-        savingAccount.setDocumentNumber(documentNumber);
-        savingAccount.setTypeAccount("savingAccount");
-        savingAccountRepository.save(savingAccount);
-        resp.put("succes", true);
-        resp.put("message", "Checking Saving Account account registered correctly");
         return resp;
     }
 

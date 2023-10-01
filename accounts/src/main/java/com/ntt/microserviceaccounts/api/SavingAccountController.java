@@ -26,14 +26,15 @@ public class SavingAccountController {
     }
 
 
-    @PostMapping("{documentNumber}")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody SavingAccount savingAccount, @PathVariable String documentNumber){
-        Map<String, Object> resp = savingAccountService.save(savingAccount,documentNumber);
-        boolean succes = (boolean) resp.get("succes");
-        if(succes){
-            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> save(@RequestBody SavingAccount savingAccount){
+        Map<String, Object> resp = savingAccountService.save(savingAccount, savingAccount.getDocumentNumber());
+        Integer success = (Integer) resp.get("success");
+
+        HttpStatus httpStatus = (success == 1) ? HttpStatus.CREATED :
+                                (success == 0) ? HttpStatus.BAD_REQUEST :
+                                 HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(httpStatus).body(resp);
     }
 
 

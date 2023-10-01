@@ -28,8 +28,6 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         return currentAccountRepository.findAll();
     }
 
-
-
     @Override
     public Map<String, Object> save(CurrentAccount currentAccount, String documentNumber) {
         Map<String, Object>  resp = new HashMap<>();

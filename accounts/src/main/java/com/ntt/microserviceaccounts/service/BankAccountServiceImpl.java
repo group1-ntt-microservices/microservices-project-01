@@ -6,10 +6,13 @@ import com.ntt.microserviceaccounts.domain.service.BankAccountService;
 import com.ntt.microserviceaccounts.exception.BankAccountNotFoundException;
 import com.ntt.microserviceaccounts.external.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.rmi.server.UID;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,21 +32,28 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public List<BankAccount> getAll() {
-        return bankAccountRepository.findAll();
+        try {
+            return bankAccountRepository.findAll();
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
     }
 
 
     @Override
     public List<BankAccount> getAllAccountsCustomer(String documentNumber) {
-        return bankAccountRepository.findByDocumentNumber(documentNumber);
+        try {
+            Optional<Customer> customer = customerService.findByDocumentNumber(documentNumber);
+
+            return bankAccountRepository.findByDocumentNumber(documentNumber);
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
     }
 
 
     @Override
-    public BankAccount getBankAccount(String accountNumber) {
-        if (!bankAccountRepository.existsByAccountNumber(accountNumber)){
-            throw new BankAccountNotFoundException(accountNumber);
-        }
+    public Optional<BankAccount> getBankAccount(String accountNumber) {
         return bankAccountRepository.findByAccountNumber(accountNumber);
     }
     @Override
@@ -51,13 +61,14 @@ public class BankAccountServiceImpl implements BankAccountService {
         return bankAccountRepository.existsByAccountNumber(accountNumber);
     }
 
+
     @Override
     public BankAccount updateBankAccount(String accountNumber, BankAccount bankAccount) {
-        BankAccount bankAccount1 = bankAccountRepository.findByAccountNumber(accountNumber);
-        if(bankAccount1 != null){
-            bankAccount1.setBalance(bankAccount.getBalance());
-            bankAccount1.setCompletedTransactions(bankAccount.getCompletedTransactions());
-            return bankAccountRepository.save(bankAccount1);
+        Optional<BankAccount> bankAccount1 = bankAccountRepository.findByAccountNumber(accountNumber);
+        if(bankAccount1.isPresent()){
+            bankAccount1.get().setBalance(bankAccount.getBalance());
+            bankAccount1.get().setCompletedTransactions(bankAccount.getCompletedTransactions());
+            return bankAccountRepository.save(bankAccount1.get());
         }
         return null;
     }
