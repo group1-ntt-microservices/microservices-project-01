@@ -12,15 +12,7 @@ import java.util.Optional;
 @FeignClient(name = "customer-api", url = "http://localhost:8081/")
 public interface CustomerService {
 
-
     @GetMapping("documentNumber/{documentNumber}")
     Optional<Customer> findByDocumentNumber(@PathVariable String documentNumber);
-
-
-
-    /*
-    @PatchMapping("{documentNumber}")
-    Customer updateCustomer(@PathVariable String documentNumber, @RequestBody Customer customer);
-    */
 
 }

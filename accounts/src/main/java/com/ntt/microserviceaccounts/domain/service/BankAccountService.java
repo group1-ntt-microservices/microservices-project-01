@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BankAccountService {
@@ -17,7 +18,7 @@ public interface BankAccountService {
     BankAccount save(BankAccount bankAccount);
     List<BankAccount> getAllAccountsCustomer(String documentNumber);
 
-    BankAccount getBankAccount(String accountNumber);
+    Optional<BankAccount> getBankAccount(String accountNumber);
     boolean validateAccount(String accountNumber);
 
     BankAccount updateBankAccount(String accountNumber, BankAccount bankAccount);

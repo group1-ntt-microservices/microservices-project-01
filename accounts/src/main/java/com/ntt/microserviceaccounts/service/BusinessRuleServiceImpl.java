@@ -38,9 +38,6 @@ public class BusinessRuleServiceImpl implements BusinessRuleService {
         return false;
     }
 
-    public boolean accountHholderOrAuthorized(String documentNumber){
 
-        return true;
-    }
 
 }

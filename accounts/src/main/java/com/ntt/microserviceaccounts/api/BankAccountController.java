@@ -2,8 +2,6 @@ package com.ntt.microserviceaccounts.api;
 
 import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
 import com.ntt.microserviceaccounts.domain.model.enity.BankAccountDTO;
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.Customer;
 import com.ntt.microserviceaccounts.domain.service.BankAccountService;
 import com.ntt.microserviceaccounts.external.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/bankaccounts")
@@ -32,7 +31,11 @@ public class BankAccountController {
      */
     @GetMapping
     public ResponseEntity<List<BankAccount>> fetchAll(){
-        return ResponseEntity.ok(bankAccountService.getAll());
+        List<BankAccount> listBankAccounts = bankAccountService.getAll();
+        if (!listBankAccounts.isEmpty()){
+            return ResponseEntity.ok(bankAccountService.getAll());
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(listBankAccounts);
     }
 
     /**
@@ -43,9 +46,12 @@ public class BankAccountController {
      */
     @GetMapping("accounts")
     public ResponseEntity<List<BankAccount>> getAllAccounts(@RequestParam("document") String documentNumber){
-        return ResponseEntity.ok(bankAccountService.getAllAccountsCustomer(documentNumber));
+        List<BankAccount> listBankAccounts = bankAccountService.getAllAccountsCustomer(documentNumber);
+        if (!listBankAccounts.isEmpty()){
+            return ResponseEntity.ok(bankAccountService.getAllAccountsCustomer(documentNumber));
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(listBankAccounts);
     }
-
     /**
      * This method fetches a bank account from the database based on the provided
      * account number and returns it.
@@ -54,22 +60,20 @@ public class BankAccountController {
      * @return The bank account matching the provided account number or an HTTP 404 response if not found.
      */
     @GetMapping("accountnumber/{accountNumber}")
-    public BankAccount getBankAccount(@PathVariable String accountNumber){
-        return bankAccountService.getBankAccount(accountNumber);
+    public ResponseEntity<BankAccount> getBankAccount(@PathVariable String accountNumber){
+        Optional<BankAccount> account = bankAccountService.getBankAccount(accountNumber);
+        return account.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
-
     @PutMapping("{accountNumber}")
     public ResponseEntity<Object> updateBankAccount(@PathVariable String accountNumber, @RequestBody BankAccountDTO bankAccountDTO){
-        BankAccount bankAccount = bankAccountService.getBankAccount(accountNumber);
-        if (bankAccount != null) {
-            bankAccount.setBalance(bankAccountDTO.getBalance());
-            bankAccount.setCompletedTransactions(bankAccountDTO.getCompletedTransactions());
-            bankAccountService.save(bankAccount);
-            return ResponseEntity.ok().body(bankAccount);
+        Optional<BankAccount> account  = bankAccountService.getBankAccount(accountNumber);
+        if (account.isPresent()) {
+            account.get().setBalance(bankAccountDTO.getBalance());
+            account.get().setCompletedTransactions(bankAccountDTO.getCompletedTransactions());
+            bankAccountService.save(account.get());
+            return ResponseEntity.ok().body(account);
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
     }
 
 
