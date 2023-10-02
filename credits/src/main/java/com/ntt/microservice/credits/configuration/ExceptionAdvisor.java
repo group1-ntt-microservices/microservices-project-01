@@ -1,6 +1,7 @@
 package com.ntt.microservice.credits.configuration;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import com.ntt.microservice.credits.service.exception.CardNumberAlreadyExistsException;
 import com.ntt.microservice.credits.service.exception.CreditAlreadyPaidException;
@@ -13,6 +14,7 @@ import com.ntt.microservice.credits.service.exception.ImpossibleChangeValueExcep
 import com.ntt.microservice.credits.service.exception.SomeAmountIsIncorrectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -21,6 +23,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
  */
 @ControllerAdvice
 public class ExceptionAdvisor {
+
+  /**
+   * Handles validation exceptions and returns a response with validation error details.
+   *
+   * @param ex The MethodArgumentNotValidException.
+   * @return ResponseEntity with validation error details.
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, String>> handleValidationException(
+      MethodArgumentNotValidException ex
+  ) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getFieldErrors().forEach(
+        fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage())
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+  }
 
   /**
    * Handles exceptions when a card number already exists.
