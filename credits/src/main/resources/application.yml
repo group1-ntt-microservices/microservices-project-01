@@ -15,3 +15,6 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL8Dialect
+    mvc:
+        path-match:
+            matching-strategy: ant_path_matcher
