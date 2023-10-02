@@ -2,7 +2,9 @@ package com.ntt.microservicetransactions.service;
 
 import com.ntt.microservicetransactions.domain.model.dto.*;
 import com.ntt.microservicetransactions.domain.model.entity.CreditTransaction;
+import com.ntt.microservicetransactions.domain.model.exception.InsufficientBalanceException;
 import com.ntt.microservicetransactions.domain.model.exception.InsufficientParameterException;
+import com.ntt.microservicetransactions.domain.model.exception.MethodCallFailureException;
 import com.ntt.microservicetransactions.domain.repository.CreditTransactionRepository;
 import com.ntt.microservicetransactions.domain.service.CreditTransactionService;
 import com.ntt.microservicetransactions.infraestructure.feignclient.CreditClient;
@@ -24,22 +26,22 @@ public class CreditTransactionServiceImpl implements CreditTransactionService {
     private CreditClient creditClient;
 
     @Override
-    public List<CreditTransactionDTO> getFilteredCreditTransactions(String creditId, String customerDocumentNumber, Date startDate, Date endDate) {
+    public List<CreditTransactionDTO> getFilteredCreditTransactions(String creditId, String customerDocumentNumber) {
         List<CreditTransaction> creditTransactionList = new ArrayList<>();
-        if (creditId == null && customerDocumentNumber == null){
+        if (creditId == null && customerDocumentNumber == null) {
             throw new InsufficientParameterException("Es necesario que se pase al menos alguno de los parametros");
         }
 
-        if(creditId != null && customerDocumentNumber == null){
+        if (creditId != null && customerDocumentNumber == null) {
             creditTransactionList = creditTransactionRepository.findByCreditId(creditId);
         }
 
-        if(creditId == null && customerDocumentNumber != null){
+        if (creditId == null && customerDocumentNumber != null) {
             creditTransactionList = creditTransactionRepository.findByCustomerDocumentNumber(customerDocumentNumber);
         }
 
-        if (creditId != null && customerDocumentNumber != null){
-            creditTransactionList = creditTransactionRepository.findByCreditIdAndCustomerDocumentNumber(creditId,customerDocumentNumber);
+        if (creditId != null && customerDocumentNumber != null) {
+            creditTransactionList = creditTransactionRepository.findByCreditIdAndCustomerDocumentNumber(creditId, customerDocumentNumber);
         }
 
         return creditTransactionList.stream().map(creditTransaction -> mapDTO(creditTransaction)).collect(Collectors.toList());
@@ -48,26 +50,61 @@ public class CreditTransactionServiceImpl implements CreditTransactionService {
     @Override
     public CreditTransactionDTO createCreditTransaction(CreditTransactionDTO creditTransactionDTO) {
         CreditDTO creditDTO = creditClient.getCredit(creditTransactionDTO.getCreditId()).getBody();
-        UpdatedCreditDTO updatedCreditDTO = mapUpdateCredit(creditDTO,creditTransactionDTO);
-        updateCreditFeign(creditTransactionDTO.getCreditId(),updatedCreditDTO);
-        return mapDTO(creditTransactionRepository.save(mapEntity(creditTransactionDTO)));
+        validateAmountCreditPay(creditDTO, creditTransactionDTO);
+        CreditTransaction creditTransactionResponse = new CreditTransaction();
+        try {
+            UpdatedCreditDTO updatedCreditDTO = mapUpdateCredit(creditDTO, creditTransactionDTO);
+            updateCreditFeign(creditTransactionDTO.getCreditId(), updatedCreditDTO);
+            creditTransactionResponse = creditTransactionRepository.save(mapEntity(creditTransactionDTO));
+        } catch (Exception e) {
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            for (StackTraceElement element : stackTrace) {
+                if (element.getMethodName().equals("updateCreditFeign")) {
+                    throw new MethodCallFailureException("Fallo en la llamada al metodo updateCreditFeign");
+                }
+                if (element.getMethodName().equals("save")) {
+                    UpdatedCreditDTO updatedExceptionCreditDTO = mapUpdateExceptionCredit(creditDTO);
+                    updateCreditFeign(creditTransactionDTO.getCreditId(), updatedExceptionCreditDTO);
+                    throw new MethodCallFailureException("Fallo en la llamada al metodo save");
+                }
+            }
+        }
+        return mapDTO(creditTransactionResponse);
     }
 
-    private UpdatedCreditDTO mapUpdateCredit(CreditDTO creditDTO, CreditTransactionDTO creditTransactionDTO){
+    private UpdatedCreditDTO mapUpdateCredit(CreditDTO creditDTO, CreditTransactionDTO creditTransactionDTO) {
         UpdatedCreditDTO updatedCreditDTO = new UpdatedCreditDTO();
         updatedCreditDTO.setCustomerId(creditDTO.getCustomerId());
         updatedCreditDTO.setAmountGranted(creditDTO.getAmountGranted());
         updatedCreditDTO.setInterest(creditDTO.getInterest());
         updatedCreditDTO.setAmountInterest(creditDTO.getAmountInterest());
-        updatedCreditDTO.setAmountPaid(creditDTO.getAmountPaid());
+        updatedCreditDTO.setAmountPaid(creditTransactionDTO.getAmount() + creditDTO.getAmountPaid());
         return updatedCreditDTO;
     }
 
-    private void updateCreditFeign(String idCredit, UpdatedCreditDTO updatedCreditDTO){
-        creditClient.updateCredit(idCredit,updatedCreditDTO);
+    private UpdatedCreditDTO mapUpdateExceptionCredit(CreditDTO creditDTO) {
+        UpdatedCreditDTO mapUpdatedCredit = new UpdatedCreditDTO();
+        mapUpdatedCredit.setCustomerId(creditDTO.getCustomerId());
+        mapUpdatedCredit.setAmountGranted(creditDTO.getAmountGranted());
+        mapUpdatedCredit.setInterest(creditDTO.getInterest());
+        mapUpdatedCredit.setAmountInterest(creditDTO.getAmountInterest());
+        mapUpdatedCredit.setAmountPaid(creditDTO.getAmountPaid());
+
+        return mapUpdatedCredit;
+
     }
 
-    private CreditTransactionDTO mapDTO(CreditTransaction creditTransaction){
+    private void updateCreditFeign(String idCredit, UpdatedCreditDTO updatedCreditDTO) {
+        creditClient.updateCredit(idCredit, updatedCreditDTO);
+    }
+
+    private void validateAmountCreditPay(CreditDTO creditDTO, CreditTransactionDTO creditTransactionDTO) {
+        if (creditDTO.getAmountPaid() + creditTransactionDTO.getAmount() > creditDTO.getAmountGranted()) {
+            throw new InsufficientBalanceException("La deuda es inferior al monto pagado");
+        }
+    }
+
+    private CreditTransactionDTO mapDTO(CreditTransaction creditTransaction) {
         CreditTransactionDTO creditTransactionDTO = new CreditTransactionDTO();
         creditTransactionDTO.setId(creditTransaction.getId());
         creditTransactionDTO.setType(creditTransaction.getType());
@@ -79,7 +116,7 @@ public class CreditTransactionServiceImpl implements CreditTransactionService {
         return creditTransactionDTO;
     }
 
-    private CreditTransaction mapEntity(CreditTransactionDTO creditTransactionDTO){
+    private CreditTransaction mapEntity(CreditTransactionDTO creditTransactionDTO) {
         CreditTransaction creditTransaction = new CreditTransaction();
         creditTransaction.setId(creditTransactionDTO.getId());
         creditTransaction.setType(creditTransactionDTO.getType());

@@ -5,8 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * Represents the response entity for limit transaction Exceeded
+ */
 @ControllerAdvice
-public class ResponseEntityLimitTransactionExceddedHandler {
+public class ResponseEntityLimitTransactionExceededHandler {
 
     @ExceptionHandler(LimitTransactionsExceededException.class)
     public ResponseEntity<ErrorResponse> handleLimitTransactionsExceededException(LimitTransactionsExceededException ex) {

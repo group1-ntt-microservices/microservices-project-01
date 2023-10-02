@@ -8,11 +8,35 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Repository interface for bank account transaction.
+ */
 @Repository
 public interface CreditTransactionRepository extends MongoRepository<CreditTransaction,String> {
 
+    /**
+     * Finds a list of CreditTransaction matching fields creditId and customerDocumentNumber
+     *
+     * @param creditId The credit id to match.
+     * @param customerDocumentNumber The customer document number to match.
+     * @return List of CreditTransaction
+     */
     @Query("{ 'creditId' : ?0, 'customerDocumentNumber' : ?1 }")
-    List<CreditTransaction> findByCreditId(String creditId);
-    List<CreditTransaction> findByCustomerDocumentNumber(String customerDocumentNumber);
     List<CreditTransaction> findByCreditIdAndCustomerDocumentNumber(String creditId, String customerDocumentNumber);
+
+    /**
+     * Finds a list of CreditTransaction matching field customerDocumentNumber
+     *
+     * @param customerDocumentNumber The customer document number to match.
+     * @return List of CreditTransaction
+     */
+    List<CreditTransaction> findByCustomerDocumentNumber(String customerDocumentNumber);
+
+    /**
+     * Finds a list of CreditTransaction matching field creditId
+     *
+     * @param creditId The credit id to match.
+     * @return List of CreditTransaction
+     */
+    List<CreditTransaction> findByCreditId(String creditId);
 }
