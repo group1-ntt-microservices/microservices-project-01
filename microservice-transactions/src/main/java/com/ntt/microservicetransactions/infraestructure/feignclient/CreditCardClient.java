@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name="credit-card-service", url = "http://192.168.0.25:8083", path = "/creditCard")
+@FeignClient(name="credit-card-service", url = "http://192.168.0.25:8083", path = "/api/credits/creditCards")
 public interface CreditCardClient {
 
     @GetMapping("/{id}")

@@ -7,6 +7,20 @@ import java.util.List;
 
 public interface CreditTransactionService {
 
+    /**
+     * Adds a new credit transaction
+     *
+     * @param creditTransactionDTO The data transfer object of credit transaction
+     * @return An instance of class CreditTransactionDTO.
+     */
     public CreditTransactionDTO createCreditTransaction(CreditTransactionDTO creditTransactionDTO);
-    public List<CreditTransactionDTO> getFilteredCreditTransactions(String creditId, String customerDocumentNumber, Date startDate, Date endDate);
+
+    /**
+     * Retrieves a list of CreditTransactionDTO
+     *
+     * @param creditId The ID of credit
+     * @param customerDocumentNumber The document number of the customer
+     * @return A list of class CreditTransactionDTO.
+     */
+    public List<CreditTransactionDTO> getFilteredCreditTransactions(String creditId, String customerDocumentNumber);
 }

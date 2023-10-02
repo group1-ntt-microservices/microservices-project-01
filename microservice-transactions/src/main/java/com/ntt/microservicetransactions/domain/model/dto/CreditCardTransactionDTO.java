@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * Represents data transfer object of credit card transaction
+ */
 @Getter
 @Setter
 public class CreditCardTransactionDTO {

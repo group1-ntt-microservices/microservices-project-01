@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * Represents the response entity for exception insufficient parameter
+ */
 @ControllerAdvice
 public class ResponseEntityInsufficientParameterException {
     @ExceptionHandler(InsufficientParameterException.class)

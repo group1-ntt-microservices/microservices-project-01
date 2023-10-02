@@ -1,6 +1,7 @@
 package com.ntt.microservicetransactions.infraestructure.controller;
 
 import com.ntt.microservicetransactions.domain.model.dto.BankAccountTransactionDTO;
+import com.ntt.microservicetransactions.domain.model.exception.InsufficientBalanceException;
 import com.ntt.microservicetransactions.domain.service.BankAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,9 @@ public class BankAccountTransactionController {
 
     @PostMapping
     public ResponseEntity<BankAccountTransactionDTO> createBankAccountTransaction(@RequestBody BankAccountTransactionDTO bankAccountTransactionDTO){
+        if(bankAccountTransactionDTO.getAmount()<0){
+            throw new InsufficientBalanceException("El monto no puede ser negativo");
+        }
         return new ResponseEntity<>(bankAccountTransactionService.createBankAccountTransaction(bankAccountTransactionDTO), HttpStatus.OK);
     }
 

@@ -3,6 +3,9 @@ package com.ntt.microservicetransactions.domain.model.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Represents data transfer object of updated credit
+ */
 @Getter
 @Setter
 

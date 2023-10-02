@@ -1,12 +1,13 @@
 package com.ntt.microservicetransactions.domain.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * Represents data transfer object of bank account transaction
+ */
 @Getter
 @Setter
 public class BankAccountTransactionDTO {

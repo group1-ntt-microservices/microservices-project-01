@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+/**
+ * Represents a credit transaction
+ */
 @Getter @Setter
 @Document(collection = "credit_transactions")
 @AllArgsConstructor
@@ -15,16 +18,10 @@ public class CreditTransaction {
 
     @Id
     private String id;
-
     private String type;
-
     private Date date;
-
     private float amount;
-
     private String atm;
-
     private String creditId;
-
     private String customerDocumentNumber;
 }

@@ -2,6 +2,7 @@ package com.ntt.microservicetransactions.infraestructure.controller;
 
 import com.ntt.microservicetransactions.domain.model.dto.CreditCardTransactionDTO;
 import com.ntt.microservicetransactions.domain.model.dto.CreditTransactionDTO;
+import com.ntt.microservicetransactions.domain.model.exception.InsufficientBalanceException;
 import com.ntt.microservicetransactions.domain.service.CreditCardTransactionService;
 import com.ntt.microservicetransactions.domain.service.CreditTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class CreditCardTransactionController {
 
     @PostMapping
     public ResponseEntity<CreditCardTransactionDTO> createCreditCardTransaction(@RequestBody CreditCardTransactionDTO creditCardTransactionDTO){
+        if(creditCardTransactionDTO.getAmount()<0){
+            throw new InsufficientBalanceException("El monto no puede ser negativo");
+        }
         return new ResponseEntity<>(creditCardTransactionService.createCreditCardTransaction(creditCardTransactionDTO), HttpStatus.OK);
     }
 

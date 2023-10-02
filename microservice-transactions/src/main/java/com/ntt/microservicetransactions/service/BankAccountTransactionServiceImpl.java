@@ -3,7 +3,9 @@ package com.ntt.microservicetransactions.service;
 import com.ntt.microservicetransactions.domain.model.dto.BankAccountDTO;
 import com.ntt.microservicetransactions.domain.model.dto.BankAccountTransactionDTO;
 import com.ntt.microservicetransactions.domain.model.dto.UpdatedBankAccountDTO;
+import com.ntt.microservicetransactions.domain.model.dto.UpdatedCreditDTO;
 import com.ntt.microservicetransactions.domain.model.entity.BankAccountTransaction;
+import com.ntt.microservicetransactions.domain.model.entity.CreditTransaction;
 import com.ntt.microservicetransactions.domain.model.exception.*;
 import com.ntt.microservicetransactions.domain.repository.BankAccountTransactionRepository;
 import com.ntt.microservicetransactions.domain.service.BankAccountTransactionService;
@@ -79,23 +81,41 @@ public class BankAccountTransactionServiceImpl implements BankAccountTransaction
 
     private BankAccountTransactionDTO processTransactionCurrentAccount(BankAccountDTO bankAccountDTO, BankAccountTransactionDTO bankAccountTransactionDTO){
         verifyTransactionType(bankAccountDTO,bankAccountTransactionDTO);
-        updateBankAccountFeign(bankAccountDTO.getAccountNumber(), updateBankAccount(bankAccountDTO, bankAccountTransactionDTO));
-        return saveTransaction(bankAccountTransactionDTO);
+        return processUpdateAndSaveTransaction(bankAccountDTO,bankAccountTransactionDTO);
     }
 
     private BankAccountTransactionDTO processTransactionSavingAccount(BankAccountDTO bankAccountDTO, BankAccountTransactionDTO bankAccountTransactionDTO){
         verifyAvailableTransactions(bankAccountDTO);
         verifyTransactionType(bankAccountDTO,bankAccountTransactionDTO);
-        updateBankAccountFeign(bankAccountDTO.getAccountNumber(),updateBankAccount(bankAccountDTO,bankAccountTransactionDTO));
-        return saveTransaction(bankAccountTransactionDTO);
+        return processUpdateAndSaveTransaction(bankAccountDTO,bankAccountTransactionDTO);
     }
 
     private BankAccountTransactionDTO processTransactionFixedTermAccount(BankAccountDTO bankAccountDTO, BankAccountTransactionDTO bankAccountTransactionDTO){
         verifyDaySuitableForTransaction(bankAccountDTO);
         verifyAvailableTransactions(bankAccountDTO);
         verifyTransactionType(bankAccountDTO,bankAccountTransactionDTO);
-        updateBankAccountFeign(bankAccountDTO.getAccountNumber(),updateBankAccount(bankAccountDTO,bankAccountTransactionDTO));
-        return saveTransaction(bankAccountTransactionDTO);
+        return processUpdateAndSaveTransaction(bankAccountDTO,bankAccountTransactionDTO);
+    }
+
+    private BankAccountTransactionDTO processUpdateAndSaveTransaction(BankAccountDTO bankAccountDTO, BankAccountTransactionDTO bankAccountTransactionDTO){
+        BankAccountTransactionDTO bankAccountTransactionResponse = new BankAccountTransactionDTO();
+        try {
+            updateBankAccountFeign(bankAccountDTO.getAccountNumber(), updateBankAccount(bankAccountDTO, bankAccountTransactionDTO));
+            bankAccountTransactionResponse = saveTransaction(bankAccountTransactionDTO);
+        } catch (Exception e) {
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            for (StackTraceElement element : stackTrace) {
+                if (element.getMethodName().equals("updateBankAccountFeign")) {
+                    throw new MethodCallFailureException("Fallo en la llamada al metodo updateBankAccountFeign");
+                }
+                if (element.getMethodName().equals("saveTransaction")) {
+                    UpdatedBankAccountDTO updatedExceptionBankAccountDTO = mapUpdateExceptionBankAccount(bankAccountDTO,bankAccountTransactionDTO);
+                    updateBankAccountFeign(bankAccountDTO.getAccountNumber(), updatedExceptionBankAccountDTO);
+                    throw new MethodCallFailureException("Fallo en la llamada al metodo saveTransaction");
+                }
+            }
+        }
+        return bankAccountTransactionResponse;
     }
 
     private void verifyDaySuitableForTransaction(BankAccountDTO bankAccountDTO){
@@ -140,7 +160,6 @@ public class BankAccountTransactionServiceImpl implements BankAccountTransaction
         mapUpdatedBankAccount.setCompletedTransactions(calculateNewCompletedTransactions(bankAccountDTO.getCompletedTransactions()));
 
         return mapUpdatedBankAccount;
-
     }
 
     private Float calculateNewBalance(Boolean typeTransactionDeposit, Float currentBalance, Float transactionBalance){
@@ -161,6 +180,17 @@ public class BankAccountTransactionServiceImpl implements BankAccountTransaction
 
     private BankAccountTransactionDTO saveTransaction(BankAccountTransactionDTO bankAccountTransactionDTO){
         return mapDTO(bankAccountTransactionRepository.save(mapEntity(bankAccountTransactionDTO)));
+    }
+
+    private UpdatedBankAccountDTO mapUpdateExceptionBankAccount(BankAccountDTO bankAccountDTO, BankAccountTransactionDTO bankAccountTransactionDTO){
+        UpdatedBankAccountDTO mapUpdatedBankAccount=new UpdatedBankAccountDTO();
+        mapUpdatedBankAccount.setAccountNumber(bankAccountDTO.getAccountNumber());
+        mapUpdatedBankAccount.setAmount(bankAccountTransactionDTO.getAmount());
+        mapUpdatedBankAccount.setTypeTransaction(bankAccountTransactionDTO.getType());
+        mapUpdatedBankAccount.setCompletedTransaction(false);
+        mapUpdatedBankAccount.setBalance(bankAccountDTO.getBalance());
+        mapUpdatedBankAccount.setCompletedTransactions(bankAccountDTO.getCompletedTransactions());
+        return mapUpdatedBankAccount;
     }
 
     private BankAccountTransactionDTO mapDTO(BankAccountTransaction bankAccountTransaction){
