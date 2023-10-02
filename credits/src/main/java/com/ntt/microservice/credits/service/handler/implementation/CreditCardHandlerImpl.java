@@ -79,12 +79,7 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
     if (creditCardService.existsByCustomerId(creditCardRequestDto.getCustomerId())) {
       throw new CustomerAlreadyAssignedException();
     }
-    if (creditCardRequestDto.getBalanceAvailable()
-        + creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
-        || creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
-        || creditCardRequestDto.getBalanceAvailable() > creditCardRequestDto.getLimitAmount()) {
-      throw new SomeAmountIsIncorrectException();
-    }
+    validateAmounts(creditCardRequestDto);
     try {
       CustomerDto customer = customerFeignService
           .findCustomerById(creditCardRequestDto.getCustomerId());
@@ -135,17 +130,27 @@ public class CreditCardHandlerImpl implements CreditCardHandler {
       throw new ImpossibleChangeValueException();
     }
 
-    if (creditCardRequestDto.getBalanceAvailable()
-        + creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
-        || creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
-        || creditCardRequestDto.getBalanceAvailable() > creditCardRequestDto.getLimitAmount()) {
-      throw new SomeAmountIsIncorrectException();
-    }
+    validateAmounts(creditCardRequestDto);
 
     creditCard.setBalanceDue(creditCardRequestDto.getBalanceDue());
     creditCard.setBalanceAvailable(creditCardRequestDto.getBalanceAvailable());
     creditCard.setLimitAmount(creditCardRequestDto.getLimitAmount());
 
     return creditCardMapper.creditCardToCreditCardResponseDto(creditCardService.save(creditCard));
+  }
+
+  private void validateAmounts(CreditCardRequestDto creditCardRequestDto) {
+    if (creditCardRequestDto.getBalanceAvailable()
+        + creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
+        || creditCardRequestDto.getBalanceDue() > creditCardRequestDto.getLimitAmount()
+        || creditCardRequestDto.getBalanceAvailable() > creditCardRequestDto.getLimitAmount()
+        || creditCardRequestDto.getBalanceAvailable()
+        + creditCardRequestDto.getBalanceDue() < creditCardRequestDto.getLimitAmount()
+        || creditCardRequestDto.getBalanceAvailable() < 0
+        || creditCardRequestDto.getBalanceDue() < 0
+        || creditCardRequestDto.getLimitAmount() < 0
+    ) {
+      throw new SomeAmountIsIncorrectException();
+    }
   }
 }

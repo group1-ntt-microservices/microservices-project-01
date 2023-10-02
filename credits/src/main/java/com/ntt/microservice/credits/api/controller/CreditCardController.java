@@ -6,6 +6,7 @@ import com.ntt.microservice.credits.service.handler.CreditCardHandler;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @AllArgsConstructor
 @RestController
-@RequestMapping("/creditCard")
+@RequestMapping("/creditCards")
 public class CreditCardController {
 
   private CreditCardHandler creditCardHandler;
@@ -65,7 +66,7 @@ public class CreditCardController {
    */
   @PostMapping("/")
   public ResponseEntity<CreditCardResponseDto> save(
-      @RequestBody CreditCardRequestDto creditCardRequestDto) {
+      @Validated @RequestBody CreditCardRequestDto creditCardRequestDto) {
     return ResponseEntity.ok(creditCardHandler.save(creditCardRequestDto));
   }
 
@@ -91,7 +92,7 @@ public class CreditCardController {
   @PutMapping("/{id}")
   public ResponseEntity<CreditCardResponseDto> update(
       @PathVariable String id,
-      @RequestBody CreditCardRequestDto creditCardRequestDto
+      @Validated @RequestBody CreditCardRequestDto creditCardRequestDto
   ) {
     return ResponseEntity.ok(creditCardHandler.update(id, creditCardRequestDto));
   }

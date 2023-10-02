@@ -6,6 +6,7 @@ import com.ntt.microservice.credits.service.handler.CreditHandler;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @AllArgsConstructor
 @RestController
-@RequestMapping("/credit")
+@RequestMapping("/")
 public class CreditController {
 
   private CreditHandler creditHandler;
@@ -53,7 +54,8 @@ public class CreditController {
    * @return A ResponseEntity containing the created credit response DTO in the body.
    */
   @PostMapping("/")
-  public ResponseEntity<CreditResponseDto> save(@RequestBody CreditRequestDto creditRequestDto) {
+  public ResponseEntity<CreditResponseDto> save(
+      @Validated @RequestBody CreditRequestDto creditRequestDto) {
     return ResponseEntity.ok(creditHandler.save(creditRequestDto));
   }
 
@@ -79,7 +81,7 @@ public class CreditController {
   @PutMapping("/{id}")
   public ResponseEntity<CreditResponseDto> update(
       @PathVariable String id,
-      @RequestBody CreditRequestDto creditRequestDto
+      @Validated @RequestBody CreditRequestDto creditRequestDto
   ) {
     return ResponseEntity.ok(creditHandler.update(id, creditRequestDto));
   }
