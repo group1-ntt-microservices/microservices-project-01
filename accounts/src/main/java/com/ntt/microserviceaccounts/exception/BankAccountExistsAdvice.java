@@ -9,8 +9,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for BankAccountExistsException.
+ */
 @ControllerAdvice
 public class BankAccountExistsAdvice {
+    /**
+     * Handles BankAccountExistsException and returns a custom error response.
+     *
+     * @param exception The BankAccountExistsException instance.
+     * @return A Map containing the error message.
+     */
     @ResponseBody
     @ExceptionHandler(BankAccountExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

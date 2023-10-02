@@ -10,9 +10,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Advice class to handle BankAccountNotFoundException and return appropriate error response.
+ */
 @ControllerAdvice
 public class BankAccountNotFoundAdvice {
-
+    /**
+     * Handles BankAccountNotFoundException and returns a JSON response with the error message.
+     *
+     * @param exception The exception to handle.
+     * @return A Map containing the error message.
+     */
     @ResponseBody
     @ExceptionHandler(BankAccountNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

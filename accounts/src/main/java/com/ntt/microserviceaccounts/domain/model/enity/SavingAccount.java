@@ -9,6 +9,9 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * Entity representing a saving account, inheriting properties from BankAccount.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

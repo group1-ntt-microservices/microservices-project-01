@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Data Transfer Object (DTO) representing a business customer.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

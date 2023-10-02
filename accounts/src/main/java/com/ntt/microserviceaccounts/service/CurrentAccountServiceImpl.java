@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Predicate;
 
+/**
+ * Implementation of the CurrentAccountService interface. Provides methods for managing current accounts.
+ */
 @Service
 public class CurrentAccountServiceImpl implements CurrentAccountService {
 
@@ -33,12 +36,25 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
 
 
-
+    /**
+     * Retrieves all current accounts.
+     *
+     * @return List of current accounts.
+     */
     @Override
     public List<CurrentAccount> getAll() {
         return currentAccountRepository.findAll();
     }
 
+    /**
+     * Saves a new current account after performing necessary validations.
+     *
+     * @param currentAccount The current account object to be saved.
+     * @return The saved current account.
+     * @throws BusinessRulesException     If business rules are violated.
+     * @throws ValidateAccountException    If account validation fails.
+     * @throws DuplicateDocumetNumberException If a duplicate document number is encountered.
+     */
     @Override
     public CurrentAccount save(CurrentAccount currentAccount) {
 
@@ -55,9 +71,16 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
             }
             businessRuleService.validateAccountDuplicate(currentAccount.getAccountNumber());
 
+            if (currentAccount.getDocumentNumber().length() == 8){
+                Optional<CustomerDTO> customerDTO = customerService.findByDocumentNumber(currentAccount.getDocumentNumber());
+                initializeCurrentAccountPersonal(currentAccount);
+                return currentAccountRepository.save(currentAccount);
+            }
+
             Optional<BusinessCustomerDTO> businessCustomerDTO = customerService.findByBusinessDocumentNumber(currentAccount.getDocumentNumber());
             initializeCurrentAccount(currentAccount, businessCustomerDTO);
             return currentAccountRepository.save(currentAccount);
+
         }catch (FeignException e){
             if (e.status() == HttpStatus.NOT_FOUND.value()) {
                 throw new CustomerNotFoundException(currentAccount.getDocumentNumber());
@@ -67,7 +90,16 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
     }
 
-
+    /**
+     * Updates a current account based on the provided account number and customer type.
+     *
+     * @param accountNumber The account number of the current account to be updated.
+     * @param account       The updated current account object.
+     * @param typeCustomer  The type of the customer ("headlines" or "authorizeds").
+     * @return The updated current account.
+     * @throws CustomerNotFoundException      If the customer is not found.
+     * @throws DuplicateDocumetNumberException If a duplicate document number is encountered.
+     */
     @Override
     public CurrentAccount updateCurrentAccount(String accountNumber, CurrentAccount account,String typeCustomer) {
 
@@ -109,16 +141,26 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
 
     }
-
-    public Predicate<CurrentAccount> isValidAccount() {
-        return account -> account.getAccountNumber().length() == 14 && account.getInterbankAccountCode().length() == 20;
-    }
+    /**
+     * Validates if a document number is duplicated within the account holders or authorized signatories list.
+     *
+     * @param accountHolderIds       The list of account holders.
+     * @param authorizedSignatoryIds The list of authorized signatories.
+     * @param newDocumentNumber      The new document number to be validated.
+     * @throws DuplicateDocumetNumberException If a duplicate document number is encountered.
+     */
     public void validateDuplicatedDocumentNumber(List<String> accountHolderIds, List<String> authorizedSignatoryIds, String newDocumentNumber){
         if (accountHolderIds.stream().anyMatch(id -> id.equals(newDocumentNumber)) ||
                 authorizedSignatoryIds.stream().anyMatch(id -> id.equals(newDocumentNumber))) {
             throw new DuplicateDocumetNumberException(newDocumentNumber);
         }
     }
+    /**
+     * Initializes the account holders list of a current account based on business customer information.
+     *
+     * @param currentAccount        The current account to be initialized.
+     * @param businessCustomerDTO   The business customer DTO, if available.
+     */
     private void initializeCurrentAccount(CurrentAccount currentAccount, Optional<BusinessCustomerDTO> businessCustomerDTO) {
         List<String> listDocuments = new ArrayList<>();
         businessCustomerDTO.ifPresent(dto -> {
@@ -131,7 +173,17 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         currentAccount.setAuthorizedSignatoryIds(new ArrayList<>());
     }
 
-
+    /**
+     * Initializes the account holders list of a personal current account.
+     *
+     * @param currentAccount The current account to be initialized.
+     */
+    private void initializeCurrentAccountPersonal(CurrentAccount currentAccount) {
+        currentAccount.setId(UUID.randomUUID().toString());
+        currentAccount.setMaintenanceFeeFree(true);
+        currentAccount.setAccountHolderIds(new ArrayList<>());
+        currentAccount.setAuthorizedSignatoryIds(new ArrayList<>());
+    }
 
 
 }

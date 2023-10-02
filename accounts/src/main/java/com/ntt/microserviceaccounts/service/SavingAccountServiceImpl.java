@@ -1,11 +1,9 @@
 package com.ntt.microserviceaccounts.service;
 
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
+
 import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.repository.SavingAccountRepository;
-import com.ntt.microserviceaccounts.domain.service.BankAccountService;
+
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;
 import com.ntt.microserviceaccounts.domain.service.SavingAccountService;
 import com.ntt.microserviceaccounts.exception.BusinessRulesException;
@@ -15,16 +13,16 @@ import com.ntt.microserviceaccounts.exception.ValidateAccountException;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.UUID;
-import java.util.function.Predicate;
 
-
+/**
+ * Service class implementing operations for Saving Accounts.
+ */
 @Service
 public class SavingAccountServiceImpl implements SavingAccountService {
 
@@ -33,12 +31,23 @@ public class SavingAccountServiceImpl implements SavingAccountService {
     @Autowired
     private SavingAccountRepository savingAccountRepository;
 
+
+    /**
+     * Retrieves all saving accounts.
+     *
+     * @return A list of all saving accounts.
+     */
     @Override
     public List<SavingAccount> getAll() {
         return savingAccountRepository.findAll();
     }
 
-
+    /**
+     * Saves a new saving account.
+     *
+     * @param savingAccount The saving account to be saved.
+     * @return The saved saving account.
+     */
     @Override
     public SavingAccount save(SavingAccount savingAccount) {
         try {

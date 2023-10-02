@@ -6,7 +6,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
-
+/**
+ * Entity representing a current account, inheriting properties from BankAccount.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

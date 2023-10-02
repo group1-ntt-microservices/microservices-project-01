@@ -5,10 +5,12 @@ import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.rmi.server.UID;
-import java.util.UUID;
 
+
+/**
+ * Repository interface for accessing FixedTermAccount entities in the database.
+ */
 @Repository
-public interface FixedTermAccountRepository extends JpaRepository<FixedTermAccount, Long> {
+public interface FixedTermAccountRepository extends JpaRepository<FixedTermAccount, String> {
 
 }

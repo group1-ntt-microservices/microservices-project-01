@@ -7,12 +7,19 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+
+/**
+ * Configuration class for Swagger documentation.
+ * Enables Swagger 2 and WebMvc configuration.
+ */
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
@@ -23,7 +30,8 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .apiInfo(apiInfo());
 
     }
 
@@ -38,5 +46,12 @@ public class SpringFoxConfig implements WebMvcConfigurer {
     @Bean
     public InternalResourceViewResolver defaultViewResolver() {
         return new InternalResourceViewResolver();
+    }
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("API Bank Accounts")
+                .description("Api documentation")
+                .version("1.0.0")
+                .build();
     }
 }

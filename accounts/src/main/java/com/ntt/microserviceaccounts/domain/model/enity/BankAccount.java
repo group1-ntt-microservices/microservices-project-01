@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
+/**
+ * Entity representing a bank account.
+ */
 @Entity
 @Getter
 @Setter

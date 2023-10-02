@@ -3,6 +3,10 @@ package com.ntt.microserviceaccounts.domain.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+/**
+ * Data Transfer Object (DTO) representing a bank account.
+ * Contains essential account information for transactions and balance management.
+ */
 
 @Getter
 @Setter

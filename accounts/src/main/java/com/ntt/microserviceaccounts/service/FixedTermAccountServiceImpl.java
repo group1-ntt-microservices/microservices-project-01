@@ -1,7 +1,6 @@
 package com.ntt.microserviceaccounts.service;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
 import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
 import com.ntt.microserviceaccounts.domain.repository.FixedTermAccountRepository;
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;
@@ -17,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
+/**
+ * Service class implementing operations for Fixed Term Accounts.
+ */
 @Service
 public class FixedTermAccountServiceImpl implements FixedTermAccountService {
 
@@ -26,12 +27,22 @@ public class FixedTermAccountServiceImpl implements FixedTermAccountService {
     private BusinessRuleService businessRuleService;
     @Autowired
     private FixedTermAccountRepository fixedTermAccountRepository;
-
+    /**
+     * Retrieves all fixed-term accounts.
+     *
+     * @return A list of all fixed-term accounts.
+     */
     @Override
     public List<FixedTermAccount> getAll() {
         return fixedTermAccountRepository.findAll();
     }
 
+    /**
+     * Saves a new fixed-term account.
+     *
+     * @param fixedTermAccount The fixed-term account to be saved.
+     * @return The saved fixed-term account.
+     */
     @Override
     public FixedTermAccount save(FixedTermAccount fixedTermAccount) {
 
