@@ -18,6 +18,12 @@ public class CreditTransactionController {
     @Autowired
     private CreditTransactionService creditTransactionService;
 
+    /**
+     * Adds a new credit transaction
+     *
+     * @param creditTransactionDTO The data transfer object of credit transaction
+     * @return An instance of class CreditTransactionDTO.
+     */
     @PostMapping
     public ResponseEntity<CreditTransactionDTO> createCreditTransaction(@RequestBody CreditTransactionDTO creditTransactionDTO) {
         if(creditTransactionDTO.getAmount()<0){
@@ -26,6 +32,13 @@ public class CreditTransactionController {
         return new ResponseEntity<>(creditTransactionService.createCreditTransaction(creditTransactionDTO), HttpStatus.OK);
     }
 
+    /**
+     * Retrieves a list of credit transactions
+     *
+     * @param creditId The ID of credit
+     * @param customerDocumentNumber The number of document customer
+     * @return A list of class CreditTransactionDTO.
+     */
     @GetMapping
     public List<CreditTransactionDTO> getFilteredCreditTransactions(@RequestParam(name = "creditId", required = false) String creditId,
                                                                     @RequestParam(name = "customerDocumentNumber", required = false) String customerDocumentNumber) {

@@ -2,21 +2,16 @@ package com.ntt.microservicetransactions.service;
 
 import com.ntt.microservicetransactions.domain.model.dto.*;
 import com.ntt.microservicetransactions.domain.model.entity.CreditCardTransaction;
-import com.ntt.microservicetransactions.domain.model.entity.CreditCardTransaction;
-import com.ntt.microservicetransactions.domain.model.entity.CreditTransaction;
 import com.ntt.microservicetransactions.domain.model.exception.InsufficientBalanceException;
 import com.ntt.microservicetransactions.domain.model.exception.InsufficientParameterException;
 import com.ntt.microservicetransactions.domain.model.exception.MethodCallFailureException;
 import com.ntt.microservicetransactions.domain.repository.CreditCardTransactionRepository;
-import com.ntt.microservicetransactions.domain.repository.CreditTransactionRepository;
 import com.ntt.microservicetransactions.domain.service.CreditCardTransactionService;
-import com.ntt.microservicetransactions.domain.service.CreditTransactionService;
 import com.ntt.microservicetransactions.infraestructure.feignclient.CreditCardClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -30,6 +25,13 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
     @Autowired
     private CreditCardClient creditCardClient;
 
+    /**
+     * Retrieve a list of credit card transaction with a credit card ID and customer document number
+     *
+     * @param creditCardId The number of credit card ID
+     * @param customerDocumentNumber The number of credit card
+     * @return A list of class CreditCardTransactionDTO.
+     */
     @Override
     public List<CreditCardTransactionDTO> getFilteredCreditCardTransactions(String creditCardId, String customerDocumentNumber) {
         List<CreditCardTransaction> creditCardTransactionList = new ArrayList<>();
@@ -53,6 +55,12 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
 
    }
 
+    /**
+     * Create a credit card transaction with an object of type creditCardTransactionDTO
+     *
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     * @return An instance of creditCardTransactionDTO
+     */
     @Override
     public CreditCardTransactionDTO createCreditCardTransaction(CreditCardTransactionDTO creditCardTransactionDTO) {
         CreditCardDTO creditCardDTO = creditCardClient.getCreditCard(creditCardTransactionDTO.getCreditCardId()).getBody();
@@ -81,6 +89,13 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
         return mapDTO(creditCardTransactionResponse);
     }
 
+    /**
+     * Map the object to update in microservice credit card
+     *
+     * @param creditCardDTO The object creditCardDTO
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     * @return An instance of UpdatedCreditCardDTO
+     */
     private UpdatedCreditCardDTO mapUpdateCreditCard(CreditCardDTO creditCardDTO, CreditCardTransactionDTO creditCardTransactionDTO){
         UpdatedCreditCardDTO mapUpdatedCreditCard=new UpdatedCreditCardDTO();
         mapUpdatedCreditCard.setCustomerId(creditCardDTO.getCustomerId());
@@ -100,6 +115,12 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
         return mapUpdatedCreditCard;
     }
 
+    /**
+     * Map the object to update in microservice credit card when an error occurs
+     *
+     * @param creditCardDTO The object creditCardDTO
+     * @return An instance of UpdatedCreditCardDTO
+     */
     private UpdatedCreditCardDTO mapUpdateExceptionCreditCard(CreditCardDTO creditCardDTO){
         UpdatedCreditCardDTO mapUpdatedCreditCard=new UpdatedCreditCardDTO();
         mapUpdatedCreditCard.setCustomerId(creditCardDTO.getCustomerId());
@@ -112,6 +133,12 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
 
     }
 
+    /**
+     * Check if there is a transaction of type CONSUMO o PAGO
+     *
+     * @param creditCardDTO The object creditCardDTO
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     */
     private void verifyTransactionType(CreditCardDTO creditCardDTO, CreditCardTransactionDTO creditCardTransactionDTO){
         if(creditCardTransactionDTO.getType().equalsIgnoreCase("CONSUMO")){
             verifyAvailableBalanceForWithdrawal(creditCardDTO,creditCardTransactionDTO);
@@ -121,32 +148,72 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
         }
     }
 
+    /**
+     * Check if there is available balance for the transaction type equals CONSUMO
+     *
+     * @param creditCardDTO The object creditCardDTO
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     */
     private void verifyAvailableBalanceForWithdrawal(CreditCardDTO creditCardDTO, CreditCardTransactionDTO creditCardTransactionDTO){
         if(creditCardDTO.getBalanceAvailable()<creditCardTransactionDTO.getAmount()){
             throw new InsufficientBalanceException("No cuentas con el saldo suficiente para la transaccion");
         }
     }
 
+    /**
+     * Check if there is available balance for the transaction type equals PAGO
+     *
+     * @param creditCardDTO The object creditCardDTO
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     */
     private void verifyAvailableBalanceForPay(CreditCardDTO creditCardDTO, CreditCardTransactionDTO creditCardTransactionDTO){
         if(creditCardDTO.getBalanceDue()<creditCardTransactionDTO.getAmount()){
             throw new InsufficientBalanceException("La deuda es inferior al monto pagado");
         }
     }
 
+    /**
+     * Calculate new balance in the credit card
+     *
+     * @param typeTransactionPay A boolean true if is equals PAGO
+     * @param currentBalanceAvailable The current balance available in the credit card
+     * @param amountTransaction The balance of the transaction
+     * @return The new balance
+     */
     private Float calculateNewBalanceAvailable(Boolean typeTransactionPay, Float currentBalanceAvailable, Float amountTransaction){
         BinaryOperator<Float> calculateNewBalanceAvailable = (a, b) -> typeTransactionPay ? a+b : a-b;
         return calculateNewBalanceAvailable.apply(currentBalanceAvailable,amountTransaction);
     }
 
+    /**
+     * Calculate new balance in the credit card
+     *
+     * @param typeTransactionPay A boolean true if is equals PAGO
+     * @param currentBalanceDue The current balance due in the credit card
+     * @param amountTransaction The balance of the transaction
+     * @return The new balance
+     */
     private Float calculateNewBalanceDue(Boolean typeTransactionPay, Float currentBalanceDue, Float amountTransaction){
         BinaryOperator<Float> calculateNewBalanceDue = (a, b) -> typeTransactionPay ? a-b : a+b;
         return calculateNewBalanceDue.apply(currentBalanceDue,amountTransaction);
     }
 
+    /**
+     * Makes the call to the feign client update method
+     *
+     * @param idCreditCard The ID of the credit card
+     * @param updatedCreditCardDTO the object to be updated
+     */
     private void updateCreditCardFeign(String idCreditCard, UpdatedCreditCardDTO updatedCreditCardDTO){
         creditCardClient.updateCreditCard(idCreditCard,updatedCreditCardDTO);
     }
 
+    /**
+     * Map the data access object to data transfer object of CreditCardTransaction
+     *
+     * @param creditCardTransaction The object creditCardTransaction
+     * @return An instance of CreditCardTransactionDTO
+     */
     private CreditCardTransactionDTO mapDTO(CreditCardTransaction creditCardTransaction){
         CreditCardTransactionDTO creditCardTransactionDTO = new CreditCardTransactionDTO();
         creditCardTransactionDTO.setId(creditCardTransaction.getId());
@@ -159,6 +226,12 @@ public class CreditCardTransactionServiceImpl implements CreditCardTransactionSe
         return creditCardTransactionDTO;
     }
 
+    /**
+     * Map the data transfer object to data access object of CreditCardTransaction
+     *
+     * @param creditCardTransactionDTO The object creditCardTransactionDTO
+     * @return An instance of CreditCardTransactionDTO
+     */
     private CreditCardTransaction mapEntity(CreditCardTransactionDTO creditCardTransactionDTO){
         CreditCardTransaction creditCardTransaction = new CreditCardTransaction();
         creditCardTransaction.setId(creditCardTransactionDTO.getId());
