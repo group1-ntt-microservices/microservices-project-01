@@ -2,38 +2,52 @@ package com.ntt.microserviceaccounts.api;
 
 
 import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.service.FixedTermAccountService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
+
+/**
+ * Controller for Fixed Term accounts.
+ */
 @RestController
-@RequestMapping("api/v1/fixedtermaccounts")
+@RequestMapping("fixedtermaccounts")
+@Api(tags  = "Fixed Term Account", description = "Everything about your Fixed Term accounts")
 public class FixedTermAccountController {
 
     @Autowired
     private FixedTermAccountService fixedTermAccountService;
 
-
-    @GetMapping
-    public List<FixedTermAccount> fetchAll(){
-        return fixedTermAccountService.getAll();
+    /**
+     * This method fetches a list of Fixed Term accounts
+     * @return A response entity containing a list of Fixed Term accounts.
+     */
+    @ApiOperation(value = "Return all Fixed Term accounts")
+    @GetMapping("/")
+    public ResponseEntity<List<FixedTermAccount>> fetchAll(){
+        List<FixedTermAccount> listFixedAccounts = fixedTermAccountService.getAll();
+        if (!listFixedAccounts.isEmpty()){
+            return ResponseEntity.ok(listFixedAccounts);
+        }
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{documentNumber}")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody FixedTermAccount fixedTermAccount, @PathVariable String documentNumber){
-        Map<String, Object> resp = fixedTermAccountService.save(fixedTermAccount,documentNumber);
-
-        boolean succes = (boolean) resp.get("succes");
-        if(succes){
-            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+    /**
+     * This method is used to create a Fixed Term account.
+     *
+     * @param fixedTermAccount The object representing the fixed term account to be created.
+     * @return A ResponseEntity containing the created FixedTermAccount and HTTP status 201 (CREATED).
+     */
+    @ApiOperation(value = "Add a new Fixed Term account")
+    @PostMapping("/")
+    public ResponseEntity<FixedTermAccount> save(@RequestBody FixedTermAccount fixedTermAccount){
+        return ResponseEntity.status(HttpStatus.CREATED).body(fixedTermAccountService.save(fixedTermAccount));
     }
 
 }

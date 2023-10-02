@@ -1,8 +1,12 @@
-package com.ntt.microserviceaccounts.domain.model.enity;
+package com.ntt.microserviceaccounts.domain.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+/**
+ * Data Transfer Object (DTO) representing a bank account.
+ * Contains essential account information for transactions and balance management.
+ */
 
 @Getter
 @Setter
@@ -10,9 +14,9 @@ import lombok.Setter;
 public class BankAccountDTO {
     private String accountNumber;
     private boolean completedTransaction;
-    private double amount;
+    private float amount;
     private String typeTransaction;
-    private double balance;
+    private float balance;
     private int completedTransactions;
 
 

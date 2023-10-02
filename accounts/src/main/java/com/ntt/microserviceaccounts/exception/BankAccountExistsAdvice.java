@@ -1,6 +1,5 @@
 package com.ntt.microserviceaccounts.exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,20 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Advice class to handle BankAccountNotFoundException and return appropriate error response.
+ * Global exception handler for BankAccountExistsException.
  */
 @ControllerAdvice
-public class BankAccountNotFoundAdvice {
+public class BankAccountExistsAdvice {
     /**
-     * Handles BankAccountNotFoundException and returns a JSON response with the error message.
+     * Handles BankAccountExistsException and returns a custom error response.
      *
-     * @param exception The exception to handle.
+     * @param exception The BankAccountExistsException instance.
      * @return A Map containing the error message.
      */
     @ResponseBody
-    @ExceptionHandler(BankAccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> exceptionHandler(BankAccountNotFoundException exception){
+    @ExceptionHandler(BankAccountExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> exceptionHandler(BankAccountExistsException exception){
         Map<String, String> err = new HashMap<>();
         err.put("errorMessage", exception.getMessage());
         return err;

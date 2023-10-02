@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.rmi.server.UID;
 import java.util.UUID;
 
+/**
+ * Repository interface for accessing SavingAccount entities in the database.
+ */
 @Repository
-public interface SavingAccountRepository extends JpaRepository<SavingAccount, Long> {
+public interface SavingAccountRepository extends JpaRepository<SavingAccount, String> {
 }

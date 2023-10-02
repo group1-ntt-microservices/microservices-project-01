@@ -6,7 +6,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
-
+/**
+ * Entity representing a current account, inheriting properties from BankAccount.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +18,7 @@ import java.util.List;
 public class CurrentAccount extends BankAccount{
     @Id
     private String id;
-    private double maintenanceFee;
+    private float maintenanceFee;
 
     @ElementCollection
     @CollectionTable(name = "account_holder_ids", joinColumns = @JoinColumn(name = "current_account_id"))

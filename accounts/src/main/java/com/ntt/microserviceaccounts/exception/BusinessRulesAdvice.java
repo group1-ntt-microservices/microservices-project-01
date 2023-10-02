@@ -11,20 +11,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Advice class to handle BankAccountNotFoundException and return appropriate error response.
+ * Global exception handler for BusinessRulesException in the application.
  */
 @ControllerAdvice
-public class BankAccountNotFoundAdvice {
+public class BusinessRulesAdvice {
     /**
-     * Handles BankAccountNotFoundException and returns a JSON response with the error message.
+     * Handles BusinessRulesException and returns a custom error message in the response body.
      *
-     * @param exception The exception to handle.
-     * @return A Map containing the error message.
+     * @param exception The BusinessRulesException to be handled.
+     * @return A map containing the custom error message.
      */
     @ResponseBody
-    @ExceptionHandler(BankAccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> exceptionHandler(BankAccountNotFoundException exception){
+    @ExceptionHandler(BusinessRulesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> exceptionHandler(BusinessRulesException exception){
         Map<String, String> err = new HashMap<>();
         err.put("errorMessage", exception.getMessage());
         return err;

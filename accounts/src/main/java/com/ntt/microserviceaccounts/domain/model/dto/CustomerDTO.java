@@ -1,16 +1,16 @@
-package com.ntt.microserviceaccounts.domain.model.enity;
+package com.ntt.microserviceaccounts.domain.model.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-
+/**
+ * Data Transfer Object (DTO) representing a customer.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
-public class Customer {
-
+public class CustomerDTO {
 
     private String id;
     private String documentNumber;

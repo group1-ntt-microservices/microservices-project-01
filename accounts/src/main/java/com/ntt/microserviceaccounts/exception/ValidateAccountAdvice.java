@@ -9,22 +9,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
-
 /**
- * Advice class to handle BankAccountNotFoundException and return appropriate error response.
+ * Advice class to handle exceptions related to invalid account validation.
  */
 @ControllerAdvice
-public class BankAccountNotFoundAdvice {
+public class ValidateAccountAdvice {
     /**
-     * Handles BankAccountNotFoundException and returns a JSON response with the error message.
+     * Exception handler method for ValidateAccountException.
      *
-     * @param exception The exception to handle.
-     * @return A Map containing the error message.
+     * @param exception The ValidateAccountException to be handled.
+     * @return A map containing the error message.
      */
     @ResponseBody
-    @ExceptionHandler(BankAccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> exceptionHandler(BankAccountNotFoundException exception){
+    @ExceptionHandler(ValidateAccountException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> exceptionHandler(ValidateAccountException exception){
         Map<String, String> err = new HashMap<>();
         err.put("errorMessage", exception.getMessage());
         return err;

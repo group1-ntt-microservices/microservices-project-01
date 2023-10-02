@@ -1,20 +1,28 @@
 package com.ntt.microserviceaccounts.service;
 
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
+
 import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.repository.SavingAccountRepository;
-import com.ntt.microserviceaccounts.domain.service.BankAccountService;
+
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;
 import com.ntt.microserviceaccounts.domain.service.SavingAccountService;
+import com.ntt.microserviceaccounts.exception.BusinessRulesException;
+import com.ntt.microserviceaccounts.exception.CustomerNotFoundException;
+import com.ntt.microserviceaccounts.exception.InternalErrorException;
+import com.ntt.microserviceaccounts.exception.ValidateAccountException;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.UUID;
 
-
+/**
+ * Service class implementing operations for Saving Accounts.
+ */
 @Service
 public class SavingAccountServiceImpl implements SavingAccountService {
 
@@ -23,33 +31,48 @@ public class SavingAccountServiceImpl implements SavingAccountService {
     @Autowired
     private SavingAccountRepository savingAccountRepository;
 
+
+    /**
+     * Retrieves all saving accounts.
+     *
+     * @return A list of all saving accounts.
+     */
     @Override
     public List<SavingAccount> getAll() {
         return savingAccountRepository.findAll();
     }
 
-
+    /**
+     * Saves a new saving account.
+     *
+     * @param savingAccount The saving account to be saved.
+     * @return The saved saving account.
+     */
     @Override
-    public Map<String, Object> save(SavingAccount savingAccount, String documentNumber) {
-        Map<String, Object>  resp = new HashMap<>();
+    public SavingAccount save(SavingAccount savingAccount) {
         try {
-            if (!businessRuleService.validateSavingsAndFixedAccount(documentNumber)){
-                resp.put("success", 0);
-                resp.put("message", "The business rule is not followed");
-                return resp;
-            }
-            savingAccount.setId(UUID.randomUUID().toString());
-            savingAccount.setDocumentNumber(documentNumber);
             savingAccount.setTypeAccount("savingAccount");
-            savingAccountRepository.save(savingAccount);
-            resp.put("success", 1);
-            resp.put("message", "Checking Saving Account account registered correctly");
-        }catch (Exception e){
-            resp.put("success", -1);
-            resp.put("message", "Internal Error :"+e.getMessage());
+            if (!businessRuleService.validateAccountsCustomer(savingAccount.getDocumentNumber(), savingAccount.getTypeAccount())){
+                if (savingAccount.getDocumentNumber().length() == 8){
+                    throw new BusinessRulesException("A personal client cannot have more than one account");
+                }
+                throw new BusinessRulesException("A business client cannot have a Saving Account account");
+            }
+            if (!businessRuleService.isValidAccount().test(savingAccount)){
+                throw new ValidateAccountException("The account number must be 14 digits and the interbank account code must be 20 digits.");
+            }
+            businessRuleService.validateAccountDuplicate(savingAccount.getAccountNumber());
+            savingAccount.setId(UUID.randomUUID().toString());
+            savingAccount.setMaintenanceFeeFree(false);
+            return savingAccountRepository.save(savingAccount);
+        }catch (FeignException e){
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                throw new CustomerNotFoundException(savingAccount.getDocumentNumber());
+            }
+            throw new InternalErrorException("status 500");
 
         }
-        return resp;
+
     }
 
 }

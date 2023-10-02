@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
+/**
+ * Entity representing a bank account.
+ */
 @Entity
 @Getter
 @Setter
@@ -19,7 +21,7 @@ public class BankAccount {
 
     @Id
     private String id;
-    private double balance;
+    private float balance;
     private String accountNumber;
     private String interbankAccountCode;
     private String documentNumber;
