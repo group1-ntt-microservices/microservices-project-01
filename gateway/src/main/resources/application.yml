@@ -1,0 +1,42 @@
+server:
+  port: 8085
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: credits-service
+          uri: lb://credits-service
+          predicates:
+            - Path=/creditService/**
+          filters:
+            - StripPrefix=1
+        - id: customers-service
+          uri: lb://customers-service
+          predicates:
+            - Path=/customerService/**
+          filters:
+            - StripPrefix=1
+        - id: accounts-service
+          uri: lb://accounts-service
+          predicates:
+            - Path=/accountService/**
+          filters:
+            - StripPrefix=1
+        - id: transactions-service
+          uri: lb://transactions-service
+          predicates:
+            - Path=/transactionService/**
+          filters:
+            - StripPrefix=1

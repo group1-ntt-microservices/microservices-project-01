@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * This interface defines the Feign client for interacting with the Customer Service.
  */
-@FeignClient(name = "customer-service", url = "http://localhost:8081/api/customers")
+@FeignClient(name = "customers-service",
+    url = "http://localhost:8085/customerService/api/customers")
 public interface CustomerFeignService {
 
   /**
