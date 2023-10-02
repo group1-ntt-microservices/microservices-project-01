@@ -19,7 +19,7 @@ public class BankAccount {
 
     @Id
     private String id;
-    private double balance;
+    private float balance;
     private String accountNumber;
     private String interbankAccountCode;
     private String documentNumber;

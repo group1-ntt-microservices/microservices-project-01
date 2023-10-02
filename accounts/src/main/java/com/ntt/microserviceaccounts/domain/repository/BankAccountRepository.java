@@ -14,4 +14,7 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, String
     Optional<BankAccount> findByAccountNumber(String accountNumber);
 
     boolean existsByAccountNumber(String accountNumber);
+
+
+
 }

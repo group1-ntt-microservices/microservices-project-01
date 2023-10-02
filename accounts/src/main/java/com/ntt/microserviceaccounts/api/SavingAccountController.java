@@ -1,9 +1,11 @@
 package com.ntt.microserviceaccounts.api;
 
 
+import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
 import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
 import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.service.SavingAccountService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/savingaccounts")
+@Api(tags  = "Saving Accounts", description = "accounts")
 public class SavingAccountController {
 
     @Autowired
@@ -21,20 +24,18 @@ public class SavingAccountController {
 
 
     @GetMapping
-    public List<SavingAccount> fecthAll(){
-        return savingAccountService.getAll();
+    public ResponseEntity<List<SavingAccount>> fecthAll(){
+        List<SavingAccount> SavingAccounts = savingAccountService.getAll();
+        if (!SavingAccounts.isEmpty()){
+            return ResponseEntity.ok(SavingAccounts);
+        }
+        return ResponseEntity.noContent().build();
     }
 
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> save(@RequestBody SavingAccount savingAccount){
-        Map<String, Object> resp = savingAccountService.save(savingAccount, savingAccount.getDocumentNumber());
-        Integer success = (Integer) resp.get("success");
-
-        HttpStatus httpStatus = (success == 1) ? HttpStatus.CREATED :
-                                (success == 0) ? HttpStatus.BAD_REQUEST :
-                                 HttpStatus.INTERNAL_SERVER_ERROR;
-        return ResponseEntity.status(httpStatus).body(resp);
+    public ResponseEntity<SavingAccount> save(@RequestBody SavingAccount savingAccount){
+        return ResponseEntity.status(HttpStatus.CREATED).body(savingAccountService.save(savingAccount));
     }
 
 

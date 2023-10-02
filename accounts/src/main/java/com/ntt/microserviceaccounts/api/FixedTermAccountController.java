@@ -4,6 +4,7 @@ package com.ntt.microserviceaccounts.api;
 import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
 import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.service.FixedTermAccountService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/fixedtermaccounts")
+@Api(tags  = "Fixed Term Account", description = "accounts")
 public class FixedTermAccountController {
 
     @Autowired
@@ -21,19 +23,17 @@ public class FixedTermAccountController {
 
 
     @GetMapping
-    public List<FixedTermAccount> fetchAll(){
-        return fixedTermAccountService.getAll();
+    public ResponseEntity<List<FixedTermAccount>> fetchAll(){
+        List<FixedTermAccount> listFixedAccounts = fixedTermAccountService.getAll();
+        if (!listFixedAccounts.isEmpty()){
+            return ResponseEntity.ok(listFixedAccounts);
+        }
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{documentNumber}")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody FixedTermAccount fixedTermAccount, @PathVariable String documentNumber){
-        Map<String, Object> resp = fixedTermAccountService.save(fixedTermAccount,documentNumber);
-
-        boolean succes = (boolean) resp.get("succes");
-        if(succes){
-            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+    @PostMapping
+    public ResponseEntity<FixedTermAccount> save(@RequestBody FixedTermAccount fixedTermAccount){
+        return ResponseEntity.status(HttpStatus.CREATED).body(fixedTermAccountService.save(fixedTermAccount));
     }
 
 }

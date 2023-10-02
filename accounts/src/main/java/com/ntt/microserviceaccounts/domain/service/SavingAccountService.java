@@ -12,5 +12,5 @@ public interface SavingAccountService {
 
     List<SavingAccount> getAll();
 
-    Map<String, Object> save(SavingAccount account, String documentNumber);
+    SavingAccount save(SavingAccount account);
 }

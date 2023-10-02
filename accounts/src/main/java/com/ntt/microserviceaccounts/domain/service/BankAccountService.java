@@ -1,14 +1,10 @@
 package com.ntt.microserviceaccounts.domain.service;
 
+import com.ntt.microserviceaccounts.domain.model.dto.BankAccountDTO;
 import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
-import com.ntt.microserviceaccounts.domain.model.enity.Customer;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface BankAccountService {
 
@@ -21,5 +17,7 @@ public interface BankAccountService {
     Optional<BankAccount> getBankAccount(String accountNumber);
     boolean validateAccount(String accountNumber);
 
-    BankAccount updateBankAccount(String accountNumber, BankAccount bankAccount);
+    BankAccount updateBankAccount(String accountNumber, BankAccountDTO bankAccountDTO);
+
+    void deleteAccount(String id);
 }

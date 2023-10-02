@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface CurrentAccountService {
     List<CurrentAccount> getAll();
-    Map<String, Object> save(CurrentAccount account, String documentNumber);
-    Map<String, Object> updateCurrentAccount(String accountNumber, CurrentAccount account,String typeCustomer);
+    CurrentAccount save(CurrentAccount account);
+    CurrentAccount updateCurrentAccount(String accountNumber, CurrentAccount account,String typeCustomer);
 }

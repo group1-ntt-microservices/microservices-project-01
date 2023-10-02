@@ -16,7 +16,7 @@ import java.util.List;
 public class CurrentAccount extends BankAccount{
     @Id
     private String id;
-    private double maintenanceFee;
+    private float maintenanceFee;
 
     @ElementCollection
     @CollectionTable(name = "account_holder_ids", joinColumns = @JoinColumn(name = "current_account_id"))

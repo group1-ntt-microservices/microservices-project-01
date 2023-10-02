@@ -3,6 +3,7 @@ package com.ntt.microserviceaccounts.api;
 
 import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
 import com.ntt.microserviceaccounts.domain.service.CurrentAccountService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/currentaccounts")
+@Api(tags  = "Current Account", description = "accounts")
 public class CurrentAccountController {
 
     @Autowired
@@ -21,26 +23,21 @@ public class CurrentAccountController {
     @GetMapping
     public ResponseEntity<List<CurrentAccount>> fetchAll(){
         List<CurrentAccount> listCurrentAccounts = currentAccountService.getAll() ;
-
         if (!listCurrentAccounts.isEmpty()){
             return ResponseEntity.ok(listCurrentAccounts);
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
     /**
      * Method to create a checking account.
      *
      * @param currentAccount The object representing the checking account to create.
-     * @param documentNumber The customer's document number.
      * @return A ResponseEntity containing a Map<String, Object> with information about the operation result.
      */
-    @PostMapping("{documentNumber}")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody CurrentAccount currentAccount, @PathVariable String documentNumber){
-        Map<String, Object> resp = currentAccountService.save(currentAccount, documentNumber);
-        return (boolean) resp.get("succes")
-                ? ResponseEntity.status(HttpStatus.OK).body(resp)
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+    @PostMapping
+    public ResponseEntity<CurrentAccount> save(@RequestBody CurrentAccount currentAccount){
+        return ResponseEntity.status(HttpStatus.CREATED).body(currentAccountService.save(currentAccount));
     }
 
     /**
@@ -52,14 +49,12 @@ public class CurrentAccountController {
      * @return A ResponseEntity containing a Map<String, Object> with information about the operation result.
      */
     @PatchMapping("{accountNumber}/{type}")
-    public ResponseEntity<Map<String, Object>> updateCurrentAccount(
+    public ResponseEntity<CurrentAccount> updateCurrentAccount(
             @PathVariable String accountNumber,
             @RequestBody CurrentAccount currentAccount,
             @PathVariable("type") String typeCustomer)
     {
-        Map<String, Object> resp = currentAccountService.updateCurrentAccount(accountNumber, currentAccount, typeCustomer);
-        return (boolean) resp.get("succes")
-                ? ResponseEntity.status(HttpStatus.OK).body(resp)
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+        CurrentAccount resp = currentAccountService.updateCurrentAccount(accountNumber, currentAccount, typeCustomer);
+        return ResponseEntity.ok(resp);
     }
 }

@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface FixedTermAccountService {
     List<FixedTermAccount> getAll();
-    Map<String, Object> save(FixedTermAccount fixedTermAccount, String documentNumber);
+    FixedTermAccount save(FixedTermAccount fixedTermAccount);
 }
