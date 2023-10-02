@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.domain.service;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.SavingAccount;
 
 
 import java.util.List;

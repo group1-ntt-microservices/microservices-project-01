@@ -1,6 +1,6 @@
 package com.ntt.microserviceaccounts.domain.repository;
 
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
