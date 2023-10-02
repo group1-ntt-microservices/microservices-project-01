@@ -17,6 +17,14 @@ public interface CreditService {
   List<Credit> findAll();
 
   /**
+   * Retrieve a list of credits by customer ID.
+   *
+   * @param customerId unique identifier of the customer.
+   * @return A list of Credit objects.
+   */
+  List<Credit> findByCustomerId(String customerId);
+
+  /**
    * Find a credit by ID.
    *
    * @param id The ID of the credit to find.

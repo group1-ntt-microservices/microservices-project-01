@@ -25,6 +25,14 @@ public interface CreditHandler {
   CreditResponseDto findById(String id);
 
   /**
+   * Retrieves a credit by its customer ID.
+   *
+   * @param customerId unique identifier of the customer.
+   * @return List of CreditResponseDto.
+   */
+  List<CreditResponseDto> findByCustomerId(String customerId);
+
+  /**
    * Saves a new credit based on the provided CreditRequestDto.
    *
    * @param creditRequestDto The CreditRequestDto containing credit details.

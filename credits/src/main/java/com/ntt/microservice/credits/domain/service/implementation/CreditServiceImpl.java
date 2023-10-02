@@ -28,6 +28,11 @@ public class CreditServiceImpl implements CreditService {
   }
 
   @Override
+  public List<Credit> findByCustomerId(String customerId) {
+    return creditRepository.findByCustomerId(customerId);
+  }
+
+  @Override
   public boolean existsCustomerId(String customerId) {
     return creditRepository.existsByCustomerId(customerId);
   }

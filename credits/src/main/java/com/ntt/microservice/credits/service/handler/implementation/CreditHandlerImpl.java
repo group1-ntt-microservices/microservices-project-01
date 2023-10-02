@@ -52,6 +52,22 @@ public class CreditHandlerImpl implements CreditHandler {
   }
 
   @Override
+  public List<CreditResponseDto> findByCustomerId(String customerId) {
+    try {
+      CustomerDto customer = customerFeignService.findCustomerById(customerId);
+      if (customer == null) {
+        throw new CustomerFoundIsNullException();
+      }
+      return creditService.findByCustomerId(customerId)
+          .stream()
+          .map(creditMapper::creditToCreditResponseDto)
+          .collect(Collectors.toList());
+    } catch (feign.FeignException.NotFound ex) {
+      throw new CustomerNotFoundException();
+    }
+  }
+
+  @Override
   public CreditResponseDto save(CreditRequestDto creditRequestDto) {
     try {
       CustomerDto customer = customerFeignService
