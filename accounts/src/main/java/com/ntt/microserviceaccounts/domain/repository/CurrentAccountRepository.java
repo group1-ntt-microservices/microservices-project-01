@@ -1,10 +1,8 @@
 package com.ntt.microserviceaccounts.domain.repository;
 
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.CurrentAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 /**
  * Repository interface for accessing CurrentAccount entities in the database.

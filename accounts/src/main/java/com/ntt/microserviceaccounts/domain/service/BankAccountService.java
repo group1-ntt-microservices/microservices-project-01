@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.domain.service;
 
 import com.ntt.microserviceaccounts.domain.model.dto.BankAccountDTO;
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.BankAccount;
 
 import java.util.List;
 import java.util.Map;

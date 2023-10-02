@@ -1,6 +1,6 @@
 package com.ntt.microserviceaccounts.domain.service;
 
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.BankAccount;
 
 import java.util.function.Predicate;
 

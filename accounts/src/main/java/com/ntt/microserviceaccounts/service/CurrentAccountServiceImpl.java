@@ -2,7 +2,7 @@ package com.ntt.microserviceaccounts.service;
 
 import com.ntt.microserviceaccounts.domain.model.dto.BusinessCustomerDTO;
 import com.ntt.microserviceaccounts.domain.model.dto.CustomerDTO;
-import com.ntt.microserviceaccounts.domain.model.enity.CurrentAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.CurrentAccount;
 import com.ntt.microserviceaccounts.domain.repository.CurrentAccountRepository;
 
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;
@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Implementation of the CurrentAccountService interface. Provides methods for managing current accounts.

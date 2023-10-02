@@ -1,6 +1,6 @@
 package com.ntt.microserviceaccounts.service;
 
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.BankAccount;
 import com.ntt.microserviceaccounts.domain.model.dto.CustomerDTO;
 import com.ntt.microserviceaccounts.domain.repository.BankAccountRepository;
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;

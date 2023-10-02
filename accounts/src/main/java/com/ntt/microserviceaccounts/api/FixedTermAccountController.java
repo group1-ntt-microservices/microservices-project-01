@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.api;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.FixedTermAccount;
 import com.ntt.microserviceaccounts.domain.service.FixedTermAccountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

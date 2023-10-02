@@ -1,6 +1,6 @@
 package com.ntt.microserviceaccounts.api;
 
-import com.ntt.microserviceaccounts.domain.model.enity.BankAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.BankAccount;
 import com.ntt.microserviceaccounts.domain.model.dto.BankAccountDTO;
 import com.ntt.microserviceaccounts.domain.service.BankAccountService;
 import com.ntt.microserviceaccounts.external.CustomerService;
@@ -98,9 +98,9 @@ public class BankAccountController {
      */
     @ApiOperation(value ="Update bank account balance")
     @PutMapping("{accountNumber}")
-    public ResponseEntity<BankAccount> updateBankAccount(@PathVariable String accountNumber, @RequestBody BankAccountDTO bankAccountDTO){
-      BankAccount account = bankAccountService.updateBankAccount(accountNumber, bankAccountDTO);
-       return ResponseEntity.ok(account);
+    public ResponseEntity<BankAccount> updateBankAccount(@PathVariable String accountNumber,@RequestBody BankAccountDTO bankAccountDTO){
+        BankAccount account = bankAccountService.updateBankAccount(accountNumber, bankAccountDTO);
+        return ResponseEntity.ok(account);
     }
     /**
      * This method deletes a bank account by its unique identifier.

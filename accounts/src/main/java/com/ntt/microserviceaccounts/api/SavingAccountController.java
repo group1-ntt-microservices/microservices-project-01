@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.api;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.SavingAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.SavingAccount;
 import com.ntt.microserviceaccounts.domain.service.SavingAccountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

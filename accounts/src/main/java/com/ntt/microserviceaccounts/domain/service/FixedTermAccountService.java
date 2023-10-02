@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.domain.service;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.FixedTermAccount;
 import java.util.List;
 
 

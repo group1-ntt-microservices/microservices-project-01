@@ -1,7 +1,7 @@
 package com.ntt.microserviceaccounts.service;
 
 
-import com.ntt.microserviceaccounts.domain.model.enity.FixedTermAccount;
+import com.ntt.microserviceaccounts.domain.model.entity.FixedTermAccount;
 import com.ntt.microserviceaccounts.domain.repository.FixedTermAccountRepository;
 import com.ntt.microserviceaccounts.domain.service.BusinessRuleService;
 import com.ntt.microserviceaccounts.domain.service.FixedTermAccountService;
