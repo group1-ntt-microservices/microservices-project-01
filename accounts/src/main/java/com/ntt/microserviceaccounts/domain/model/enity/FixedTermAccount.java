@@ -17,4 +17,5 @@ import javax.persistence.Table;
 @Table(name = "fixedtermaccounts")
 public class FixedTermAccount extends BankAccount{
     private int withdrawalDay;
+    private int monthlyTransactionLimit;
 }

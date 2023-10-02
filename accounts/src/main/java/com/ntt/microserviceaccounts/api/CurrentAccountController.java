@@ -38,13 +38,9 @@ public class CurrentAccountController {
     @PostMapping("{documentNumber}")
     public ResponseEntity<Map<String, Object>> save(@RequestBody CurrentAccount currentAccount, @PathVariable String documentNumber){
         Map<String, Object> resp = currentAccountService.save(currentAccount, documentNumber);
-
-        boolean succes = (boolean) resp.get("succes");
-
-        if(succes){
-            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+        return (boolean) resp.get("succes")
+                ? ResponseEntity.status(HttpStatus.OK).body(resp)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
     }
 
     /**
@@ -62,12 +58,8 @@ public class CurrentAccountController {
             @PathVariable("type") String typeCustomer)
     {
         Map<String, Object> resp = currentAccountService.updateCurrentAccount(accountNumber, currentAccount, typeCustomer);
-
-        boolean succes = (boolean) resp.get("succes");
-        if (succes){
-            return ResponseEntity.status(HttpStatus.OK).body(resp);
-        }
-        currentAccountService.updateCurrentAccount(accountNumber, currentAccount, typeCustomer);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+        return (boolean) resp.get("succes")
+                ? ResponseEntity.status(HttpStatus.OK).body(resp)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
     }
 }

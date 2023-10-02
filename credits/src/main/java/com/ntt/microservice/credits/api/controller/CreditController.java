@@ -1,124 +1,121 @@
 package com.ntt.microservice.credits.api.controller;
 
 import com.ntt.microservice.credits.api.dto.request.CreditRequestDto;
-import com.ntt.microservice.credits.domain.model.Credit;
-import com.ntt.microservice.credits.domain.service.CreditService;
-import com.ntt.microservice.credits.feign.dto.CustomerDto;
-import com.ntt.microservice.credits.feign.service.CustomerFeignService;
-import com.ntt.microservice.credits.service.CreditMapper;
+import com.ntt.microservice.credits.api.dto.response.CreditResponseDto;
+import com.ntt.microservice.credits.service.handler.CreditHandler;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-
-import static com.ntt.microservice.credits.configuration.Constants.*;
-
+/**
+ * Rest Controller for managing credit operations.
+ */
+@Api(tags = "Credits API", description = "Rest Controller for managing credits operations.")
 @AllArgsConstructor
 @RestController
-@RequestMapping("/credit")
+@RequestMapping("/")
 public class CreditController {
 
-  private CreditService creditService;
-  private CustomerFeignService customerFeignService;
-  private CreditMapper creditMapper;
+  private CreditHandler creditHandler;
 
+  /**
+   * Retrieves a list of all credits.
+   *
+   * @return A ResponseEntity containing a list of credit response DTOs in the body.
+   */
+  @ApiOperation("Retrieve a list of all credits")
   @GetMapping("/")
-  public ResponseEntity<List<Credit>> findAll() {
-    return ResponseEntity.ok(creditService.findAll());
+  public ResponseEntity<List<CreditResponseDto>> findAll() {
+    return ResponseEntity.ok(creditHandler.findAll());
   }
 
+  /**
+   * Retrieves a credit by its ID.
+   *
+   * @param id The ID of the credit.
+   * @return A ResponseEntity containing the credit response DTO in the body.
+   */
+  @ApiOperation("Retrieve a credit by its ID")
   @GetMapping("/{id}")
-  public ResponseEntity<Credit> findById(@PathVariable String id) {
-   Optional<Credit> creditOptional = creditService.findById(id);
-    return creditOptional.map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
-  }
-
-  @PostMapping("/")
-  public ResponseEntity<Object> save(@RequestBody CreditRequestDto creditRequestDto) {
-    try {
-      CustomerDto customer = customerFeignService.findCustomerById(creditRequestDto.getCustomerId());
-      if (customer == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found: NULL");
-      }
-      if (customer.getCustomerType().equals(TYPE_PERSONAL_CUSTOMER)
-          && creditService.existsCustomerId(creditRequestDto.getCustomerId())) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Credit already exists for the same personal customer");
-      }
-      Credit credit = creditMapper.creditRequestDtoToCredit(creditRequestDto);
-      credit.setId(UUID.randomUUID().toString());
-      credit.setCustomerDocumentNumber(customer.getDocumentNumber());
-      credit.setCustomerType(customer.getCustomerType());
-      credit.setActive(true);
-      credit.setCreatedAt(new Date());
-      credit.setStatus(STATUS_CREDIT_PENDING);
-      return ResponseEntity.ok(creditService.save(credit));
-    } catch (feign.FeignException.NotFound ex) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found: ERROR");
-    } catch (Exception ex) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server Credit Error");
-    }
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Object> deleteById(@PathVariable String id) {
-    Optional<Credit> credit = creditService.findById(id);
-    if (!credit.isPresent()){
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Credit not found");
-    }
-    creditService.deleteById(id);
-    return ResponseEntity.ok().build();
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<Object> update(
-      @PathVariable String id,
-      @RequestBody CreditRequestDto creditRequestDto
+  public ResponseEntity<CreditResponseDto> findById(
+      @ApiParam(value = "ID of the credit", required = true)
+      @PathVariable String id
   ) {
-    Optional<Credit> optionalCredit = creditService.findById(id);
-    if (!optionalCredit.isPresent()){
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Credit not found");
-    }
-    if (creditRequestDto.getAmountInterest() < creditRequestDto.getAmountPaid()){
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Monto con Interes menor al Pagado");
-    }
-    if (creditRequestDto.getAmountGranted() != optionalCredit.get().getAmountGranted()
-    || creditRequestDto.getAmountInterest() != optionalCredit.get().getAmountInterest()){
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Montos No Coinciden");
-    }
-    Credit credit = optionalCredit.get();
-    if (credit.getStatus() == STATUS_CREDIT_PAID){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Credit already paid");
-    }
-    credit.setAmountPaid(creditRequestDto.getAmountPaid());
-    credit.setId(id);
-    if (credit.getAmountPaid() == credit.getAmountInterest()){
-      credit.setStatus(STATUS_CREDIT_PAID);
-    }
-    return ResponseEntity.ok(creditService.save(credit));
+    return ResponseEntity.ok(creditHandler.findById(id));
   }
 
-  @PatchMapping("/pay/{id}")
-  public ResponseEntity<Credit> pay(@PathVariable String id, @RequestBody float amountPaid) {
-    Optional<Credit> optionalCredit = creditService.findById(id);
-    if (!optionalCredit.isPresent()){
-      return ResponseEntity.badRequest().build();
-    }
-    Credit credit = optionalCredit.get();
-    if (credit.getStatus() == STATUS_CREDIT_PAID){
-      return ResponseEntity.badRequest().build();
-    }
-    float montoRestante = credit.getAmountInterest() - credit.getAmountPaid();
-    if (amountPaid > montoRestante){
-      return ResponseEntity.badRequest().build();
-    }
-    credit.setAmountPaid(credit.getAmountPaid() + amountPaid);
-    if (credit.getAmountPaid() == credit.getAmountInterest()){
-      credit.setStatus(STATUS_CREDIT_PAID);
-    }
-    return ResponseEntity.ok(creditService.save(credit));
+  /**
+   * Retrieves a credit by customer ID.
+   *
+   * @param customerId unique identifier of the customer.
+   * @return A ResponseEntity containing the credit response DTO in the body.
+   */
+  @ApiOperation("Retrieve a credit by customer ID")
+  @GetMapping("/customerId/{customerId}")
+  public ResponseEntity<List<CreditResponseDto>> findByCustomerId(
+      @ApiParam(value = "ID of the customer", required = true)
+      @PathVariable String customerId
+  ) {
+    return ResponseEntity.ok(creditHandler.findByCustomerId(customerId));
   }
 
+  /**
+   * Creates a new credit.
+   *
+   * @param creditRequestDto The credit request DTO.
+   * @return A ResponseEntity containing the created credit response DTO in the body.
+   */
+  @ApiOperation("Create a new credit")
+  @PostMapping("/")
+  public ResponseEntity<CreditResponseDto> save(
+      @ApiParam(value = "Credit request DTO", required = true, name = "Credit Request Dto")
+      @Validated @RequestBody CreditRequestDto creditRequestDto) {
+    return ResponseEntity.ok(creditHandler.save(creditRequestDto));
+  }
+
+  /**
+   * Deletes a credit by its ID.
+   *
+   * @param id The ID of the credit to delete.
+   * @return A ResponseEntity with no content in the body if the deletion was successful.
+   */
+  @ApiOperation("Delete a credit by its ID")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Object> deleteById(
+      @ApiParam(value = "ID of the credit", required = true)
+      @PathVariable String id
+  ) {
+    creditHandler.deleteById(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Updates a credit by its ID.
+   *
+   * @param id               The ID of the credit to update.
+   * @param creditRequestDto The credit request DTO with updated information.
+   * @return A ResponseEntity containing the updated credit response DTO in the body.
+   */
+  @ApiOperation("Update a credit by its ID")
+  @PutMapping("/{id}")
+  public ResponseEntity<CreditResponseDto> update(
+      @ApiParam(value = "ID of the credit", required = true)
+      @PathVariable String id,
+      @ApiParam(value = "Credit request DTO with updated information", required = true)
+      @Validated @RequestBody CreditRequestDto creditRequestDto
+  ) {
+    return ResponseEntity.ok(creditHandler.update(id, creditRequestDto));
+  }
 }
